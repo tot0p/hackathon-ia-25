@@ -1,0 +1,62 @@
+[
+  {
+    "id": "first_click",
+    "name": "First Step to Change",
+    "description": "Make your first eco-click",
+    "unlocked": false,
+    "conditionType": "totalClicks",
+    "conditionValue": 1,
+    "conditionText": "Clicked the Earth 1 time",
+    "icon": "👆"
+  },
+  {
+    "id": "eco_warrior",
+    "name": "Eco Warrior",
+    "description": "Reach 100 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 100,
+    "conditionText": "Earned 100 Eco Points",
+    "icon": "🌱"
+  },
+  {
+    "id": "environmental_hero",
+    "name": "Environmental Hero",
+    "description": "Reach 1000 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 1000,
+    "conditionText": "Earned 1000 Eco Points",
+    "icon": "🦸"
+  },
+  {
+    "id": "building_master",
+    "name": "Building Master",
+    "description": "Purchase 10 buildings",
+    "unlocked": false,
+    "conditionType": "totalBuildings",
+    "conditionValue": 10,
+    "conditionText": "Purchased 10 buildings in total",
+    "icon": "⬆️"
+  },
+  {
+    "id": "prestige_pioneer",
+    "name": "Prestige Pioneer",
+    "description": "Prestige your first building",
+    "unlocked": false,
+    "conditionType": "totalPrestiges",
+    "conditionValue": 1,
+    "conditionText": "Prestiged a building for the first time",
+    "icon": "🌟"
+  },
+  {
+    "id": "prestige_master",
+    "name": "Prestige Master",
+    "description": "Prestige buildings 10 times total",
+    "unlocked": false,
+    "conditionType": "totalPrestiges",
+    "conditionValue": 10,
+    "conditionText": "Prestiged buildings 10 times in total",
+    "icon": "✨"
+  }
+]

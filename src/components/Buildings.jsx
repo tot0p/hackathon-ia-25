@@ -1,15 +1,17 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Buildings = ({ buildings, ecoPoints, onPurchase, getBuildingCost }) => {
+const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCanPrestige, getPrestigeBonus }) => {
   // Filter buildings to only show unlocked ones
   const availableBuildings = buildings.filter(building => building.unlocked);
 
   // Render a single building item
   const renderBuildingItem = (building) => {
-    const cost = getBuildingCost(building.id);
+    const cost = Math.floor(building.baseCost * Math.pow(1.15, building.level));
     const canAfford = ecoPoints >= cost;
     const maxLevel = building.level >= building.maxLevel;
+    const canPrestige = checkCanPrestige && checkCanPrestige(building.id);
+    const prestigeBonus = building.prestigeLevel > 0 ? (building.prestigeLevel * (building.prestigeBonus || 0) * 100).toFixed(0) : 0;
     
     return (
       <TouchableOpacity
@@ -19,8 +21,8 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, getBuildingCost }) => {
           maxLevel ? styles.maxedBuilding : 
             canAfford ? styles.affordableBuilding : styles.unaffordableBuilding
         ]}
-        onPress={() => onPurchase(building.id)}
-        disabled={!canAfford || maxLevel}
+        onPress={() => canPrestige ? prestigeBuilding(building.id) : onPurchase(building.id)}
+        disabled={!canAfford && !canPrestige}
       >
         <View style={styles.buildingIcon}>
           <Text style={styles.iconText}>{building.icon}</Text>
@@ -29,38 +31,59 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, getBuildingCost }) => {
         <View style={styles.buildingInfo}>
           <View style={styles.buildingHeader}>
             <Text style={styles.buildingName}>{building.name}</Text>
-            <Text style={styles.buildingLevel}>Lvl {building.level}/{building.maxLevel}</Text>
+            <Text style={styles.buildingLevel}>
+              Lvl {building.level}/{building.maxLevel}
+              {building.prestigeLevel > 0 && <Text style={styles.prestigeLevel}> 🌟{building.prestigeLevel}</Text>}
+            </Text>
           </View>
           
           <Text style={styles.buildingDescription}>{building.description}</Text>
           
-          <View style={styles.buildingFooter}>
-            <Text style={[
-              styles.costText,
-              maxLevel ? styles.maxedText : 
-                canAfford ? styles.affordableText : styles.unaffordableText
-            ]}>
-              {maxLevel ? 'MAXED' : `Cost: ${cost} eco points`}
-            </Text>
-            
-            {building.type === 'passive' && (
-              <Text style={styles.effectText}>
-                +{(building.baseEffect * (building.level + 1)).toFixed(2)} points/sec
+          {building.prestigeLevel > 0 && (
+            <Text style={styles.prestigeBonus}>Current prestige bonus: +{prestigeBonus}%</Text>
+          )}
+          
+          {canPrestige ? (
+            <View style={styles.prestigeContainer}>
+              <Text style={styles.prestigeText}>
+                Prestige now for +{(building.prestigeBonus * 100).toFixed(0)}% permanent bonus!
               </Text>
-            )}
-            
-            {building.type === 'click' && (
-              <Text style={styles.effectText}>
-                +{(building.baseEffect * (building.level + 1)).toFixed(2)} per click
+              <TouchableOpacity 
+                style={styles.prestigeButton}
+                onPress={() => prestigeBuilding(building.id)}
+              >
+                <Text style={styles.prestigeButtonText}>PRESTIGE 🌟</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.buildingFooter}>
+              <Text style={[
+                styles.costText,
+                maxLevel ? styles.maxedText : 
+                  canAfford ? styles.affordableText : styles.unaffordableText
+              ]}>
+                {maxLevel ? 'MAX LEVEL' : `Cost: ${cost} eco points`}
               </Text>
-            )}
-            
-            {building.type === 'multiplier' && (
-              <Text style={styles.effectText}>
-                +{(building.baseEffect * (building.level + 1) * 100).toFixed(2)}% bonus
-              </Text>
-            )}
-          </View>
+              
+              {building.type === 'passive' && (
+                <Text style={styles.effectText}>
+                  +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * building.prestigeBonus || 0))).toFixed(1)} pts/sec
+                </Text>
+              )}
+              
+              {building.type === 'click' && (
+                <Text style={styles.effectText}>
+                  +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * building.prestigeBonus || 0))).toFixed(1)} per click
+                </Text>
+              )}
+              
+              {building.type === 'multiplier' && (
+                <Text style={styles.effectText}>
+                  +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * building.prestigeBonus || 0)) * 100).toFixed(1)}% bonus
+                </Text>
+              )}
+            </View>
+          )}
         </View>
       </TouchableOpacity>
     );
@@ -160,9 +183,19 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#388E3C',
   },
+  prestigeLevel: {
+    color: '#FF6F00',
+    fontWeight: 'bold',
+  },
   buildingDescription: {
     fontSize: 14,
     color: '#33691E',
+    marginBottom: 6,
+  },
+  prestigeBonus: {
+    fontSize: 12,
+    color: '#FF6F00',
+    fontWeight: 'bold',
     marginBottom: 6,
   },
   buildingFooter: {
@@ -197,6 +230,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#689F38',
     textAlign: 'center',
+  },
+  prestigeContainer: {
+    marginTop: 5,
+    backgroundColor: '#FFF3E0',
+    padding: 8,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#FFB74D',
+  },
+  prestigeText: {
+    fontSize: 13,
+    color: '#E65100',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  prestigeButton: {
+    backgroundColor: '#FF9800',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 4,
+    alignSelf: 'center',
+  },
+  prestigeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
 

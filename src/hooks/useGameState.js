@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import buildingsData from '../data/buildings.json';
+import achievementsData from '../data/achievements.json';
 
 // Define the initial game state
 const initialState = {
@@ -12,118 +14,22 @@ const initialState = {
     totalEcoPoints: 0,
     treesPlanted: 0,
     co2Reduced: 0,
+    totalPrestiges: 0,
   },
   multipliers: {
     clickMultiplier: 1,
     passiveMultiplier: 1,
   },
-  buildings: [
-    {
-      id: 'solar_panel',
-      name: 'Solar Panel',
-      description: 'Generate 1 eco point per second',
-      baseCost: 10,
-      level: 0,
-      maxLevel: 50,
-      baseEffect: 1,
-      type: 'passive',
-      resource: 'ecoPoints',
-      unlocked: true,
-      icon: '☀️',
-    },
-    {
-      id: 'recycling_center',
-      name: 'Recycling Center',
-      description: 'Increase click value by 1',
-      baseCost: 25,
-      level: 0,
-      maxLevel: 30,
-      baseEffect: 1,
-      type: 'click',
-      resource: 'ecoPoints',
-      unlocked: true,
-      icon: '♻️',
-    },
-    {
-      id: 'tree_plantation',
-      name: 'Tree Plantation',
-      description: 'Plant trees and generate 5 eco points per second',
-      baseCost: 100,
-      level: 0,
-      maxLevel: 20,
-      baseEffect: 5,
-      type: 'passive',
-      resource: 'ecoPoints',
-      unlocked: false,
-      unlockAt: 50, // Unlock when player has 50 eco points
-      icon: '🌳',
-    },
-    {
-      id: 'wind_farm',
-      name: 'Wind Farm',
-      description: 'Generate 10 eco points per second',
-      baseCost: 250,
-      level: 0,
-      maxLevel: 15,
-      baseEffect: 10,
-      type: 'passive',
-      resource: 'ecoPoints',
-      unlocked: false,
-      unlockAt: 150,
-      icon: '🌬️',
-    },
-    {
-      id: 'eco_education',
-      name: 'Eco Education',
-      description: 'Increase all production by 10%',
-      baseCost: 500,
-      level: 0,
-      maxLevel: 10,
-      baseEffect: 0.1, // 10% increase
-      type: 'multiplier',
-      resource: 'ecoPoints',
-      unlocked: false,
-      unlockAt: 300,
-      icon: '📚',
-    },
-  ],
-  achievements: [
-    {
-      id: 'first_click',
-      name: 'First Step to Change',
-      description: 'Make your first eco-click',
-      unlocked: false,
-      condition: (state) => state.stats.totalClicks >= 1,
-      icon: '👆',
-    },
-    {
-      id: 'eco_warrior',
-      name: 'Eco Warrior',
-      description: 'Reach 100 eco points',
-      unlocked: false,
-      condition: (state) => state.stats.totalEcoPoints >= 100,
-      icon: '🌱',
-    },
-    {
-      id: 'environmental_hero',
-      name: 'Environmental Hero',
-      description: 'Reach 1000 eco points',
-      unlocked: false,
-      condition: (state) => state.stats.totalEcoPoints >= 1000,
-      icon: '🦸',
-    },
-    {
-      id: 'building_master',
-      name: 'Building Master',
-      description: 'Purchase 10 buildings',
-      unlocked: false,
-      condition: (state) => {
-        const totalBuildings = state.buildings.reduce((sum, building) => sum + building.level, 0);
-        return totalBuildings >= 10;
-      },
-      icon: '⬆️',
-    },
-  ],
+  buildings: buildingsData.map(building => ({
+    ...building,
+    level: 0,
+    prestigeLevel: 0,
+  })),
+  achievements: achievementsData.map(achievement => ({
+    ...achievement,
+    unlocked: false,
+  })),
+  notifications: [],
   settings: {
     soundEnabled: true,
     particlesEnabled: true,
@@ -131,17 +37,22 @@ const initialState = {
   lastSaved: null,
 };
 
-// Calculate building cost based on base cost and current level
-const calculateBuildingCost = (baseCost, level) => {
-  return Math.floor(baseCost * Math.pow(1.15, level));
+// Calculate building cost based on base cost, current level, and prestige level
+const calculateBuildingCost = (baseCost, level, prestigeLevel) => {
+  // Increase base cost by 50% for each prestige level
+  const prestigedBaseCost = baseCost * Math.pow(1.5, prestigeLevel);
+  return Math.floor(prestigedBaseCost * Math.pow(1.15, level));
 };
 
 // Calculate the total points per second from passive buildings
 const calculatePointsPerSecond = (buildings, multipliers) => {
   return buildings
     .filter(building => building.type === 'passive' && building.level > 0)
-    .reduce((sum, building) => sum + (building.baseEffect * building.level), 0) 
-    * multipliers.passiveMultiplier;
+    .reduce((sum, building) => {
+      // Include prestige bonus in calculation
+      const prestigeBonus = 1 + (building.prestigeLevel * building.prestigeBonus || 0);
+      return sum + (building.baseEffect * building.level * prestigeBonus);
+    }, 0) * multipliers.passiveMultiplier;
 };
 
 // Calculate the click value based on buildings
@@ -149,9 +60,30 @@ const calculateClickValue = (buildings, multipliers) => {
   const baseClick = 1;
   const clickBonus = buildings
     .filter(building => building.type === 'click' && building.level > 0)
-    .reduce((sum, building) => sum + (building.baseEffect * building.level), 0);
+    .reduce((sum, building) => {
+      // Include prestige bonus in calculation
+      const prestigeBonus = 1 + (building.prestigeLevel * building.prestigeBonus || 0);
+      return sum + (building.baseEffect * building.level * prestigeBonus);
+    }, 0);
   
   return (baseClick + clickBonus) * multipliers.clickMultiplier;
+};
+
+// Check if an achievement should be unlocked
+const checkAchievementCondition = (achievement, gameState) => {
+  switch (achievement.conditionType) {
+    case 'totalClicks':
+      return gameState.stats.totalClicks >= achievement.conditionValue;
+    case 'totalEcoPoints':
+      return gameState.stats.totalEcoPoints >= achievement.conditionValue;
+    case 'totalBuildings':
+      const totalBuildings = gameState.buildings.reduce((sum, building) => sum + building.level, 0);
+      return totalBuildings >= achievement.conditionValue;
+    case 'totalPrestiges':
+      return gameState.stats.totalPrestiges >= achievement.conditionValue;
+    default:
+      return false;
+  }
 };
 
 const useGameState = () => {
@@ -162,22 +94,41 @@ const useGameState = () => {
       try {
         const parsedState = JSON.parse(savedState);
         
-        // Ensure achievement condition functions are properly restored from initialState
-        if (parsedState.achievements) {
-          parsedState.achievements = parsedState.achievements.map(achievement => {
-            const initialAchievement = initialState.achievements.find(a => a.id === achievement.id);
-            if (initialAchievement) {
-              // Keep the unlocked status from saved state but restore the condition function
+        // Add any missing fields from the initial state (for compatibility)
+        const updatedState = {
+          ...initialState,
+          ...parsedState,
+          stats: {
+            ...initialState.stats,
+            ...parsedState.stats,
+            totalPrestiges: parsedState.stats.totalPrestiges || 0,
+          },
+          buildings: initialState.buildings.map(initialBuilding => {
+            const savedBuilding = parsedState.buildings.find(b => b.id === initialBuilding.id);
+            if (savedBuilding) {
               return {
-                ...initialAchievement,
-                unlocked: achievement.unlocked
+                ...initialBuilding,
+                level: savedBuilding.level || 0,
+                unlocked: savedBuilding.unlocked !== undefined ? savedBuilding.unlocked : initialBuilding.unlocked,
+                prestigeLevel: savedBuilding.prestigeLevel || 0,
               };
             }
-            return achievement;
-          });
-        }
+            return initialBuilding;
+          }),
+          achievements: initialState.achievements.map(initialAchievement => {
+            const savedAchievement = parsedState.achievements.find(a => a.id === initialAchievement.id);
+            if (savedAchievement) {
+              return {
+                ...initialAchievement,
+                unlocked: savedAchievement.unlocked || false,
+              };
+            }
+            return initialAchievement;
+          }),
+          notifications: [], // Always start with empty notifications
+        };
         
-        return parsedState;
+        return updatedState;
       } catch (error) {
         console.error('Failed to parse saved game state:', error);
         // Delete corrupted save data
@@ -218,10 +169,12 @@ const useGameState = () => {
           // Find the tree plantation building
           const treePlantation = prevState.buildings.find(b => b.id === 'tree_plantation');
           
-          // Calculate points generated by tree plantation only
-          const treePlantationPoints = treePlantation && treePlantation.level > 0
-            ? treePlantation.baseEffect * treePlantation.level * prevState.multipliers.passiveMultiplier
-            : 0;
+          // Calculate points generated by tree plantation only, with prestige bonus
+          let treePlantationPoints = 0;
+          if (treePlantation && treePlantation.level > 0) {
+            const prestigeBonus = 1 + (treePlantation.prestigeLevel * treePlantation.prestigeBonus || 0);
+            treePlantationPoints = treePlantation.baseEffect * treePlantation.level * prestigeBonus * prevState.multipliers.passiveMultiplier;
+          }
           
           // Plant 1 tree per 50 points generated by the tree plantation
           const treesToPlant = treePlantationPoints * (1/50);
@@ -249,15 +202,38 @@ const useGameState = () => {
     }
   }, [gameState.buildings, gameState.multipliers]);
 
+  // Notification management - auto-remove after 5 seconds
+  useEffect(() => {
+    if (gameState.notifications.length > 0) {
+      const timer = setTimeout(() => {
+        setGameState(prevState => ({
+          ...prevState,
+          notifications: prevState.notifications.slice(1), // Remove the oldest notification
+        }));
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [gameState.notifications]);
+
   // Check for newly unlocked buildings and achievements
   useEffect(() => {
     let hasChanges = false;
     const newState = { ...gameState };
+    const newNotifications = [...gameState.notifications];
 
     // Check for buildings to unlock
     newState.buildings = gameState.buildings.map(building => {
       if (!building.unlocked && building.unlockAt && gameState.resources.ecoPoints >= building.unlockAt) {
         hasChanges = true;
+        // Add notification for unlocked building
+        newNotifications.push({
+          id: `building-${building.id}`,
+          type: 'building',
+          title: 'New Building Unlocked!',
+          message: `${building.name} (${building.icon}) is now available for purchase!`,
+          icon: building.icon,
+        });
         return { ...building, unlocked: true };
       }
       return building;
@@ -265,22 +241,29 @@ const useGameState = () => {
 
     // Check for achievements to unlock
     newState.achievements = gameState.achievements.map(achievement => {
-      // Find the corresponding achievement in initialState to get the condition function
-      const initialAchievement = initialState.achievements.find(a => a.id === achievement.id);
-      
-      // Use the condition from initialState since the function might have been lost in serialization
-      if (!achievement.unlocked && initialAchievement && initialAchievement.condition && 
-          initialAchievement.condition(gameState)) {
+      if (!achievement.unlocked && checkAchievementCondition(achievement, gameState)) {
         hasChanges = true;
+        // Add notification for unlocked achievement
+        newNotifications.push({
+          id: `achievement-${achievement.id}`,
+          type: 'achievement',
+          title: 'Achievement Unlocked!',
+          message: `${achievement.name}: ${achievement.description}`,
+          condition: achievement.conditionText,
+          icon: achievement.icon,
+        });
         return { ...achievement, unlocked: true };
       }
       return achievement;
     });
 
     if (hasChanges) {
-      setGameState(newState);
+      setGameState({
+        ...newState,
+        notifications: newNotifications,
+      });
     }
-  }, [gameState]);
+  }, [gameState.resources, gameState.stats, gameState.buildings]);
 
   // Handle clicking on the main clicker area
   const handleClick = () => {
@@ -316,7 +299,7 @@ const useGameState = () => {
     // Check if we can purchase this building
     if (building.level >= building.maxLevel) return false;
     
-    const cost = calculateBuildingCost(building.baseCost, building.level);
+    const cost = calculateBuildingCost(building.baseCost, building.level, building.prestigeLevel);
     
     if (gameState.resources.ecoPoints < cost) return false;
     
@@ -329,9 +312,12 @@ const useGameState = () => {
     // Update multipliers if it's a multiplier building
     let newMultipliers = { ...gameState.multipliers };
     if (building.type === 'multiplier') {
+      const prestigeBonus = 1 + (building.prestigeLevel * building.prestigeBonus || 0);
+      const effectValue = building.baseEffect * prestigeBonus;
+      
       newMultipliers = {
-        clickMultiplier: gameState.multipliers.clickMultiplier + building.baseEffect,
-        passiveMultiplier: gameState.multipliers.passiveMultiplier + building.baseEffect,
+        clickMultiplier: gameState.multipliers.clickMultiplier + effectValue,
+        passiveMultiplier: gameState.multipliers.passiveMultiplier + effectValue,
       };
     }
     
@@ -343,6 +329,61 @@ const useGameState = () => {
       },
       buildings: newBuildings,
       multipliers: newMultipliers,
+    }));
+    
+    return true;
+  };
+
+  // Handle prestiging a building
+  const prestigeBuilding = (buildingId) => {
+    const buildingIndex = gameState.buildings.findIndex(b => b.id === buildingId);
+    
+    if (buildingIndex === -1) return false;
+    
+    const building = gameState.buildings[buildingIndex];
+    
+    // Can only prestige if building is at max level
+    if (building.level < building.maxLevel) return false;
+    
+    const newBuildings = [...gameState.buildings];
+    newBuildings[buildingIndex] = {
+      ...building,
+      level: 0, // Reset level
+      prestigeLevel: building.prestigeLevel + 1, // Increase prestige level
+    };
+    
+    // Reset multipliers if it's a multiplier building
+    let newMultipliers = { ...gameState.multipliers };
+    if (building.type === 'multiplier') {
+      // Remove old effect and add new effect with prestige bonus
+      const oldEffect = building.baseEffect * building.level;
+      const newPrestigeBonus = 1 + ((building.prestigeLevel + 1) * building.prestigeBonus);
+      
+      newMultipliers = {
+        clickMultiplier: gameState.multipliers.clickMultiplier - oldEffect,
+        passiveMultiplier: gameState.multipliers.passiveMultiplier - oldEffect,
+      };
+    }
+    
+    // Add notification for prestige
+    const newNotifications = [...gameState.notifications];
+    newNotifications.push({
+      id: `prestige-${building.id}-${Date.now()}`,
+      type: 'prestige',
+      title: 'Building Prestiged!',
+      message: `${building.name} has been prestiged to level ${building.prestigeLevel + 1}!`,
+      icon: '🌟',
+    });
+    
+    setGameState(prevState => ({
+      ...prevState,
+      buildings: newBuildings,
+      multipliers: newMultipliers,
+      stats: {
+        ...prevState.stats,
+        totalPrestiges: prevState.stats.totalPrestiges + 1,
+      },
+      notifications: newNotifications,
     }));
     
     return true;
@@ -360,14 +401,25 @@ const useGameState = () => {
     gameState,
     handleClick,
     purchaseBuilding,
+    prestigeBuilding,
     resetGame,
     pointsPerSecond: calculatePointsPerSecond(gameState.buildings, gameState.multipliers),
     clickValue: calculateClickValue(gameState.buildings, gameState.multipliers),
     getBuildingCost: (buildingId) => {
       const building = gameState.buildings.find(b => b.id === buildingId);
       if (!building) return null;
-      return calculateBuildingCost(building.baseCost, building.level);
+      return calculateBuildingCost(building.baseCost, building.level, building.prestigeLevel);
     },
+    checkCanPrestige: (buildingId) => {
+      const building = gameState.buildings.find(b => b.id === buildingId);
+      if (!building) return false;
+      return building.level >= building.maxLevel;
+    },
+    getPrestigeBonus: (buildingId) => {
+      const building = gameState.buildings.find(b => b.id === buildingId);
+      if (!building) return null;
+      return building.prestigeBonus || 0;
+    }
   };
 };
 

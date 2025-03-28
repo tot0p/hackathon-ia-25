@@ -1,0 +1,70 @@
+[
+  {
+    "id": "solar_panel",
+    "name": "Solar Panel",
+    "description": "Generate 1 eco point per second",
+    "baseCost": 10,
+    "maxLevel": 50,
+    "baseEffect": 1,
+    "type": "passive",
+    "resource": "ecoPoints",
+    "unlocked": true,
+    "icon": "☀️",
+    "prestigeBonus": 0.1
+  },
+  {
+    "id": "recycling_center",
+    "name": "Recycling Center",
+    "description": "Increase click value by 1",
+    "baseCost": 25,
+    "maxLevel": 30,
+    "baseEffect": 1,
+    "type": "click",
+    "resource": "ecoPoints",
+    "unlocked": true,
+    "icon": "♻️",
+    "prestigeBonus": 0.15
+  },
+  {
+    "id": "tree_plantation",
+    "name": "Tree Plantation",
+    "description": "Plant trees and generate 5 eco points per second",
+    "baseCost": 100,
+    "maxLevel": 20,
+    "baseEffect": 5,
+    "type": "passive",
+    "resource": "ecoPoints",
+    "unlocked": false,
+    "unlockAt": 50,
+    "icon": "🌳",
+    "prestigeBonus": 0.2
+  },
+  {
+    "id": "wind_farm",
+    "name": "Wind Farm",
+    "description": "Generate 10 eco points per second",
+    "baseCost": 250,
+    "maxLevel": 15,
+    "baseEffect": 10,
+    "type": "passive",
+    "resource": "ecoPoints",
+    "unlocked": false,
+    "unlockAt": 150,
+    "icon": "🌬️",
+    "prestigeBonus": 0.25
+  },
+  {
+    "id": "eco_education",
+    "name": "Eco Education",
+    "description": "Increase all production by 10%",
+    "baseCost": 500,
+    "maxLevel": 10,
+    "baseEffect": 0.1,
+    "type": "multiplier",
+    "resource": "ecoPoints",
+    "unlocked": false,
+    "unlockAt": 300,
+    "icon": "📚",
+    "prestigeBonus": 0.3
+  }
+]

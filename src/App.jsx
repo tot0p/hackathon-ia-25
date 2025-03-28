@@ -7,7 +7,9 @@ import {
   ScrollView, 
   StatusBar,
   TouchableOpacity,
-  Modal
+  Modal,
+  Animated,
+  FlatList
 } from 'react-native';
 
 // Import components
@@ -23,10 +25,13 @@ const App = () => {
     gameState,
     handleClick,
     purchaseBuilding,
+    prestigeBuilding,
     resetGame,
     pointsPerSecond,
     clickValue,
-    getBuildingCost
+    getBuildingCost,
+    checkCanPrestige,
+    getPrestigeBonus
   } = useGameState();
 
   const [activeTab, setActiveTab] = useState('buildings');
@@ -40,6 +45,53 @@ const App = () => {
     return (Math.floor(num / 100000000) / 10).toFixed(1) + 'B';
   };
 
+  // Notification component
+  const NotificationSystem = () => {
+    if (gameState.notifications.length === 0) return null;
+    
+    const renderNotification = ({ item }) => {
+      let bgColor = '#4CAF50'; // default green
+      let iconColor = '#E8F5E9';
+      
+      // Different styles for different notification types
+      if (item.type === 'achievement') {
+        bgColor = '#FFC107'; // amber
+        iconColor = '#FFF9C4';
+      } else if (item.type === 'prestige') {
+        bgColor = '#FF9800'; // orange
+        iconColor = '#FFF3E0';
+      }
+      
+      return (
+        <Animated.View style={[styles.notification, { backgroundColor: bgColor }]}>
+          <View style={[styles.notificationIconContainer, { backgroundColor: iconColor }]}>
+            <Text style={styles.notificationIcon}>{item.icon}</Text>
+          </View>
+          <View style={styles.notificationContent}>
+            <Text style={styles.notificationTitle}>{item.title}</Text>
+            <Text style={styles.notificationMessage}>{item.message}</Text>
+            {item.condition && (
+              <Text style={styles.notificationCondition}>
+                Condition: {item.condition}
+              </Text>
+            )}
+          </View>
+        </Animated.View>
+      );
+    };
+    
+    return (
+      <View style={styles.notificationsContainer}>
+        <FlatList
+          data={gameState.notifications}
+          renderItem={renderNotification}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.notificationsList}
+        />
+      </View>
+    );
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'buildings':
@@ -48,7 +100,9 @@ const App = () => {
             buildings={gameState.buildings}
             ecoPoints={gameState.resources.ecoPoints}
             onPurchase={purchaseBuilding}
-            getBuildingCost={getBuildingCost}
+            prestigeBuilding={prestigeBuilding}
+            checkCanPrestige={checkCanPrestige}
+            getPrestigeBonus={getPrestigeBonus}
           />
         );
       case 'stats':
@@ -141,6 +195,8 @@ const App = () => {
           <Text style={styles.infoButton}>ℹ️</Text>
         </TouchableOpacity>
       </View>
+      
+      <NotificationSystem />
       
       <ClickArea 
         onPress={handleClick} 
@@ -304,6 +360,58 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  notificationsContainer: {
+    position: 'absolute',
+    top: 70, // Position below the header
+    left: 10,
+    zIndex: 1000, // Ensure it's above everything else
+    maxWidth: '80%',
+    maxHeight: 150,
+  },
+  notificationsList: {
+    // No horizontal padding needed since we have left margin
+  },
+  notification: {
+    flexDirection: 'row',
+    borderRadius: 8,
+    padding: 10,
+    marginVertical: 5,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  notificationIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  notificationIcon: {
+    fontSize: 20,
+  },
+  notificationContent: {
+    flex: 1,
+  },
+  notificationTitle: {
+    fontWeight: 'bold',
+    color: 'white',
+    fontSize: 16,
+  },
+  notificationMessage: {
+    color: 'white',
+    fontSize: 14,
+  },
+  notificationCondition: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
+    fontStyle: 'italic',
+    marginTop: 2,
   },
 });
 
