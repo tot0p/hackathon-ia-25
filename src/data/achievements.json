@@ -220,16 +220,6 @@
     "icon": "🦸"
   },
   {
-    "id": "building_master",
-    "name": "Building Master",
-    "description": "Purchase 10 buildings",
-    "unlocked": false,
-    "conditionType": "totalBuildings",
-    "conditionValue": 10,
-    "conditionText": "Purchased 10 buildings in total",
-    "icon": "⬆️"
-  },
-  {
     "id": "first_building",
     "name": "Green Infrastructure",
     "description": "Purchase your first building",
