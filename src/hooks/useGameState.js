@@ -195,17 +195,25 @@ const useGameState = () => {
     
     if (pointsPerSecond > 0) {
       const timer = setInterval(() => {
-        setGameState(prevState => ({
-          ...prevState,
-          resources: {
-            ...prevState.resources,
-            ecoPoints: prevState.resources.ecoPoints + pointsPerSecond,
-          },
-          stats: {
-            ...prevState.stats,
-            totalEcoPoints: prevState.stats.totalEcoPoints + pointsPerSecond,
-          },
-        }));
+        setGameState(prevState => {
+          // Calculate environmental impact based on points generated
+          const treesToPlant = pointsPerSecond * 0.01; // 1 tree per 100 points
+          const co2ToReduce = pointsPerSecond * 0.05; // 0.05kg of CO2 per point
+          
+          return {
+            ...prevState,
+            resources: {
+              ...prevState.resources,
+              ecoPoints: prevState.resources.ecoPoints + pointsPerSecond,
+            },
+            stats: {
+              ...prevState.stats,
+              totalEcoPoints: prevState.stats.totalEcoPoints + pointsPerSecond,
+              treesPlanted: prevState.stats.treesPlanted + treesToPlant,
+              co2Reduced: prevState.stats.co2Reduced + co2ToReduce,
+            },
+          };
+        });
       }, 1000);
       
       return () => clearInterval(timer);
@@ -244,6 +252,10 @@ const useGameState = () => {
   const handleClick = () => {
     const clickValue = calculateClickValue(gameState.upgrades, gameState.multipliers);
     
+    // Calculate environmental impact based on points generated from clicking
+    const treesToPlant = clickValue * 0.01; // 1 tree per 100 points
+    const co2ToReduce = clickValue * 0.05; // 0.05kg of CO2 per point
+    
     setGameState(prevState => ({
       ...prevState,
       resources: {
@@ -254,6 +266,8 @@ const useGameState = () => {
         ...prevState.stats,
         totalClicks: prevState.stats.totalClicks + 1,
         totalEcoPoints: prevState.stats.totalEcoPoints + clickValue,
+        treesPlanted: prevState.stats.treesPlanted + treesToPlant,
+        co2Reduced: prevState.stats.co2Reduced + co2ToReduce,
       },
     }));
   };
