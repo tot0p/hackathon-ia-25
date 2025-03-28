@@ -18,8 +18,8 @@ const buildingEcoFactMap = {
 
 const BUY_MODES = {
   ONE: { value: 1, label: "Buy 1" },
+  FIVE: { value: 5, label: "Buy 5" },
   TEN: { value: 10, label: "Buy 10" },
-  HUNDRED: { value: 100, label: "Buy 100" },
   MAX: { value: "max", label: "Buy Max" },
 };
 
