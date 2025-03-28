@@ -1,62 +1,402 @@
 [
   {
     "id": 1,
-    "tip": "Unplug electronic devices when not in use to prevent phantom energy consumption."
+    "tip": "🔌 Unplug electronic devices when not in use to prevent phantom energy consumption."
   },
   {
     "id": 2,
-    "tip": "Use LED light bulbs to reduce energy consumption by up to 80% compared to traditional bulbs."
+    "tip": "💡 Use LED light bulbs to reduce energy consumption by up to 80% compared to traditional bulbs."
   },
   {
     "id": 3,
-    "tip": "Take shorter showers to conserve water and reduce energy used for heating."
+    "tip": "🚿 Take shorter showers to conserve water and reduce energy used for heating."
   },
   {
     "id": 4,
-    "tip": "Choose reusable bags instead of plastic when shopping to reduce plastic waste."
+    "tip": "🛍️ Choose reusable bags instead of plastic when shopping to reduce plastic waste."
   },
   {
     "id": 5,
-    "tip": "Walk, bike, or use public transportation instead of driving whenever possible."
+    "tip": "🚶‍♂️ Walk, bike, or use public transportation instead of driving whenever possible."
   },
   {
     "id": 6,
-    "tip": "Eat less meat to reduce your carbon footprint; meat production generates significant greenhouse gases."
+    "tip": "🥗 Eat less meat to reduce your carbon footprint; meat production generates significant greenhouse gases."
   },
   {
     "id": 7, 
-    "tip": "Buy local and seasonal foods to reduce transportation emissions."
+    "tip": "🍎 Buy local and seasonal foods to reduce transportation emissions."
   },
   {
     "id": 8,
-    "tip": "Plant trees in your community to absorb CO2 and provide shade that reduces cooling needs."
+    "tip": "🌳 Plant trees in your community to absorb CO2 and provide shade that reduces cooling needs."
   },
   {
     "id": 9,
-    "tip": "Set your thermostat a few degrees lower in winter and higher in summer to save energy."
+    "tip": "🌡️ Set your thermostat a few degrees lower in winter and higher in summer to save energy."
   },
   {
     "id": 10,
-    "tip": "Use cold water for laundry to save on water heating energy."
+    "tip": "👕 Use cold water for laundry to save on water heating energy."
   },
   {
     "id": 11,
-    "tip": "Compost food scraps to reduce methane emissions from landfills."
+    "tip": "🍃 Compost food scraps to reduce methane emissions from landfills."
   },
   {
     "id": 12,
-    "tip": "Fix leaky faucets promptly to save water and the energy used to heat it."
+    "tip": "🚰 Fix leaky faucets promptly to save water and the energy used to heat it."
   },
   {
     "id": 13,
-    "tip": "Install a programmable thermostat to automatically adjust temperature when you're away or sleeping."
+    "tip": "🌡️ Install a programmable thermostat to automatically adjust temperature when you're away or sleeping."
   },
   {
     "id": 14,
-    "tip": "Reduce, reuse, recycle - in that order of priority."
+    "tip": "♻️ Reduce, reuse, recycle - in that order of priority."
   },
   {
     "id": 15,
-    "tip": "Consider installing solar panels to generate renewable energy for your home."
+    "tip": "☀️ Consider installing solar panels to generate renewable energy for your home."
+  },
+  {
+    "id": 16,
+    "tip": "🧴 Use a reusable water bottle instead of buying single-use plastic bottles."
+  },
+  {
+    "id": 17,
+    "tip": "🧺 Air dry clothes instead of using a dryer when possible."
+  },
+  {
+    "id": 18,
+    "tip": "🚿 Install low-flow showerheads and faucets to conserve water."
+  },
+  {
+    "id": 19,
+    "tip": "🚗 Keep your car well-maintained with regular tune-ups for better fuel efficiency."
+  },
+  {
+    "id": 20,
+    "tip": "⭐ Choose energy-efficient appliances with high Energy Star ratings."
+  },
+  {
+    "id": 21,
+    "tip": "🏠 Insulate your home properly to reduce heating and cooling needs."
+  },
+  {
+    "id": 22,
+    "tip": "🌱 Start a home garden to grow your own vegetables and reduce food miles."
+  },
+  {
+    "id": 23,
+    "tip": "🧼 Use natural cleaning products to reduce chemical pollution."
+  },
+  {
+    "id": 24,
+    "tip": "📱 Switch to paperless billing to save trees and reduce paper waste."
+  },
+  {
+    "id": 25,
+    "tip": "💻 Opt for digital documents over printed ones whenever possible."
+  },
+  {
+    "id": 26,
+    "tip": "🍲 Use a pressure cooker for faster cooking and less energy use."
+  },
+  {
+    "id": 27,
+    "tip": "📭 Cancel junk mail subscriptions to reduce paper waste."
+  },
+  {
+    "id": 28,
+    "tip": "📦 Choose products with minimal or recyclable packaging."
+  },
+  {
+    "id": 29,
+    "tip": "🌿 Support companies with strong environmental commitments and practices."
+  },
+  {
+    "id": 30,
+    "tip": "🚗 Carpool with colleagues to reduce the number of vehicles on the road."
+  },
+  {
+    "id": 31,
+    "tip": "🍽️ Use cloth napkins instead of paper napkins."
+  },
+  {
+    "id": 32,
+    "tip": "🔄 Practice the 'one in, one out' rule when buying new items to reduce consumption."
+  },
+  {
+    "id": 33,
+    "tip": "🔧 Repair broken items instead of replacing them whenever possible."
+  },
+  {
+    "id": 34,
+    "tip": "💧 Use a rain barrel to collect water for plants and gardens."
+  },
+  {
+    "id": 35,
+    "tip": "🪥 Choose bamboo toothbrushes over plastic ones."
+  },
+  {
+    "id": 36,
+    "tip": "🥤 Opt for reusable straws made from stainless steel, bamboo, or glass."
+  },
+  {
+    "id": 37,
+    "tip": "🍯 Use beeswax wraps instead of plastic cling film for food storage."
+  },
+  {
+    "id": 38,
+    "tip": "🧽 Run dishwashers and washing machines only when full."
+  },
+  {
+    "id": 39,
+    "tip": "🛞 Keep your tires properly inflated for better fuel efficiency."
+  },
+  {
+    "id": 40,
+    "tip": "💻 Use a laptop instead of a desktop computer when possible, as laptops use less energy."
+  },
+  {
+    "id": 41,
+    "tip": "👚 Shop at second-hand stores to give items a second life."
+  },
+  {
+    "id": 42,
+    "tip": "🔨 Start a community sharing program for tools and equipment that aren't used frequently."
+  },
+  {
+    "id": 43,
+    "tip": "🦋 Plant a pollinator-friendly garden to support local ecosystems."
+  },
+  {
+    "id": 44,
+    "tip": "🧴 Use refillable containers for household products like soap and detergent."
+  },
+  {
+    "id": 45,
+    "tip": "🪥 Turn off the tap while brushing your teeth to conserve water."
+  },
+  {
+    "id": 46,
+    "tip": "🥕 Choose organic products grown without synthetic pesticides and fertilizers."
+  },
+  {
+    "id": 47,
+    "tip": "🔥 Properly insulate your water heater to prevent energy waste."
+  },
+  {
+    "id": 48,
+    "tip": "🔌 Use smart power strips to eliminate phantom energy use from multiple devices."
+  },
+  {
+    "id": 49,
+    "tip": "🥦 Practice 'meatless Mondays' or other regular plant-based meal days."
+  },
+  {
+    "id": 50,
+    "tip": "🛒 Buy in bulk to reduce packaging waste."
+  },
+  {
+    "id": 51,
+    "tip": "♻️ Choose products made from recycled materials."
+  },
+  {
+    "id": 52,
+    "tip": "🪟 Install window treatments that help insulate your home."
+  },
+  {
+    "id": 53,
+    "tip": "☀️ Use natural light during the day instead of artificial lighting."
+  },
+  {
+    "id": 54,
+    "tip": "🌳 Plant shade trees on the south and west sides of your home to reduce cooling costs."
+  },
+  {
+    "id": 55,
+    "tip": "🥑 Eat more whole foods and fewer processed foods to reduce packaging and energy used in processing."
+  },
+  {
+    "id": 56,
+    "tip": "⏱️ Choose durable, long-lasting products over disposable ones."
+  },
+  {
+    "id": 57,
+    "tip": "📱 Properly recycle electronics to prevent e-waste and recover valuable materials."
+  },
+  {
+    "id": 58,
+    "tip": "⚡ Consider switching to a renewable energy provider for your electricity."
+  },
+  {
+    "id": 59,
+    "tip": "🌿 Use a push mower instead of a gas-powered mower for small lawns."
+  },
+  {
+    "id": 60,
+    "tip": "💨 Install ceiling fans to reduce reliance on air conditioning."
+  },
+  {
+    "id": 61,
+    "tip": "🍎 Reduce food waste by planning meals and using leftovers creatively."
+  },
+  {
+    "id": 62,
+    "tip": "📄 Choose recycled or tree-free paper products."
+  },
+  {
+    "id": 63,
+    "tip": "👖 Wash clothes in full loads and with cold water when possible."
+  },
+  {
+    "id": 64,
+    "tip": "☕ Use a reusable coffee cup instead of disposable ones."
+  },
+  {
+    "id": 65,
+    "tip": "🧪 Make your own cleaning products from simple ingredients like vinegar and baking soda."
+  },
+  {
+    "id": 66,
+    "tip": "✈️ Purchase carbon offsets when flying is unavoidable."
+  },
+  {
+    "id": 67,
+    "tip": "🔋 Use rechargeable batteries instead of disposable ones."
+  },
+  {
+    "id": 68,
+    "tip": "🌞 Support community solar projects if you can't install your own panels."
+  },
+  {
+    "id": 69,
+    "tip": "👗 Choose natural fiber clothing over synthetic materials that release microplastics."
+  },
+  {
+    "id": 70,
+    "tip": "🏠 Properly insulate windows and doors to prevent energy leakage."
+  },
+  {
+    "id": 71,
+    "tip": "🚙 Consider an electric or hybrid vehicle for your next car purchase."
+  },
+  {
+    "id": 72,
+    "tip": "☀️ Use a solar oven or outdoor grill during summer to avoid heating your home with the oven."
+  },
+  {
+    "id": 73,
+    "tip": "🥬 Start or join a community garden to grow local food."
+  },
+  {
+    "id": 74,
+    "tip": "🪑 Choose furniture made from sustainable materials or reclaimed wood."
+  },
+  {
+    "id": 75,
+    "tip": "📱 Opt for digital subscriptions instead of physical magazines and newspapers."
+  },
+  {
+    "id": 76,
+    "tip": "📦 Declutter your home and donate usable items rather than throwing them away."
+  },
+  {
+    "id": 77,
+    "tip": "🚲 Use a bicycle for short trips instead of driving."
+  },
+  {
+    "id": 78,
+    "tip": "🍽️ Avoid using disposable plates, cups, and cutlery, even for parties."
+  },
+  {
+    "id": 79,
+    "tip": "🌸 Plant native species in your garden to reduce water and maintenance needs."
+  },
+  {
+    "id": 80,
+    "tip": "🏡 Consider a smaller living space, which requires less energy to heat and cool."
+  },
+  {
+    "id": 81,
+    "tip": "🌱 Use a reel mower for small lawns to eliminate emissions from gas mowers."
+  },
+  {
+    "id": 82,
+    "tip": "🚽 Install water-saving toilets or retrofit existing ones with water-saving devices."
+  },
+  {
+    "id": 83,
+    "tip": "🐝 Create a wildlife-friendly garden with diverse plant species."
+  },
+  {
+    "id": 84,
+    "tip": "🐾 Choose eco-friendly pet products and biodegradable waste bags."
+  },
+  {
+    "id": 85,
+    "tip": "🥕 Practice zero-waste grocery shopping with your own containers."
+  },
+  {
+    "id": 86,
+    "tip": "🧼 Switch to bar soap instead of liquid soap in plastic bottles."
+  },
+  {
+    "id": 87,
+    "tip": "🍫 Reduce or eliminate junk food with excessive packaging."
+  },
+  {
+    "id": 88,
+    "tip": "♀️ Use a menstrual cup or reusable period products instead of disposable ones."
+  },
+  {
+    "id": 89,
+    "tip": "🏗️ Choose eco-friendly building materials for home renovation projects."
+  },
+  {
+    "id": 90,
+    "tip": "🌧️ Set up a rainwater harvesting system for garden irrigation."
+  },
+  {
+    "id": 91,
+    "tip": "👕 Invest in quality clothing that will last longer instead of fast fashion."
+  },
+  {
+    "id": 92,
+    "tip": "🐞 Use natural pest control methods in your garden instead of chemical pesticides."
+  },
+  {
+    "id": 93,
+    "tip": "🌵 Choose drought-resistant landscaping in dry climates to reduce water usage."
+  },
+  {
+    "id": 94,
+    "tip": "💡 Install motion sensor lights to ensure lights aren't left on unnecessarily."
+  },
+  {
+    "id": 95,
+    "tip": "🌊 Participate in community clean-up events to remove litter from natural areas."
+  },
+  {
+    "id": 96,
+    "tip": "🍂 Maintain a compost bin for yard waste and appropriate kitchen scraps."
+  },
+  {
+    "id": 97,
+    "tip": "🏨 Choose hotels with strong environmental practices when traveling."
+  },
+  {
+    "id": 98,
+    "tip": "🗣️ Advocate for climate-friendly policies in your local government."
+  },
+  {
+    "id": 99,
+    "tip": "👨‍👩‍👧‍👦 Share information about sustainable practices with friends and family."
+  },
+  {
+    "id": 100,
+    "tip": "🌍 Calculate your carbon footprint and set goals to reduce it year by year."
   }
 ]
