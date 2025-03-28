@@ -9,8 +9,7 @@
     "type": "passive",
     "resource": "ecoPoints",
     "unlocked": true,
-    "icon": "☀️",
-    "prestigeBonus": 0.1
+    "icon": "☀️"
   },
   {
     "id": "recycling_center",
@@ -22,8 +21,7 @@
     "type": "click",
     "resource": "ecoPoints",
     "unlocked": true,
-    "icon": "♻️",
-    "prestigeBonus": 0.15
+    "icon": "♻️"
   },
   {
     "id": "tree_plantation",
@@ -36,8 +34,7 @@
     "resource": "ecoPoints",
     "unlocked": false,
     "unlockAt": 50,
-    "icon": "🌳",
-    "prestigeBonus": 0.2
+    "icon": "🌳"
   },
   {
     "id": "wind_farm",
@@ -50,8 +47,7 @@
     "resource": "ecoPoints",
     "unlocked": false,
     "unlockAt": 150,
-    "icon": "🌬️",
-    "prestigeBonus": 0.25
+    "icon": "🌬️"
   },
   {
     "id": "eco_education",
@@ -64,7 +60,6 @@
     "resource": "ecoPoints",
     "unlocked": false,
     "unlockAt": 300,
-    "icon": "📚",
-    "prestigeBonus": 0.3
+    "icon": "📚"
   }
 ]

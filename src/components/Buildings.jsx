@@ -12,7 +12,9 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
     const canAfford = ecoPoints >= cost;
     const maxLevel = building.level >= building.maxLevel;
     const canPrestige = checkCanPrestige && checkCanPrestige(building.id);
-    const prestigeBonus = building.prestigeLevel > 0 ? (building.prestigeLevel * (building.prestigeBonus || 0) * 100).toFixed(0) : 0;
+    // Use getPrestigeBonus function to get the consistent 10% value
+    const prestigeBonus = getPrestigeBonus(building.id);
+    const currentPrestigeBonus = building.prestigeLevel > 0 ? (building.prestigeLevel * prestigeBonus * 100).toFixed(0) : 0;
     
     return (
       <TouchableOpacity
@@ -41,13 +43,13 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
           <Text style={styles.buildingDescription}>{building.description}</Text>
           
           {building.prestigeLevel > 0 && (
-            <Text style={styles.prestigeBonus}>Current prestige bonus: +{prestigeBonus}%</Text>
+            <Text style={styles.prestigeBonus}>Current prestige bonus: +{currentPrestigeBonus}%</Text>
           )}
           
           {canPrestige ? (
             <View style={styles.prestigeContainer}>
               <Text style={styles.prestigeText}>
-                Prestige now for +{(building.prestigeBonus * 100).toFixed(0)}% permanent bonus!
+                Prestige now for +{(prestigeBonus * 100).toFixed(0)}% permanent bonus!
               </Text>
               <TouchableOpacity 
                 style={styles.prestigeButton}
@@ -68,19 +70,19 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
               
               {building.type === 'passive' && (
                 <Text style={styles.effectText}>
-                  +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * building.prestigeBonus || 0))).toFixed(1)} pts/sec
+                  +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * prestigeBonus || 0))).toFixed(1)} pts/sec
                 </Text>
               )}
               
               {building.type === 'click' && (
                 <Text style={styles.effectText}>
-                  +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * building.prestigeBonus || 0))).toFixed(1)} per click
+                  +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * prestigeBonus || 0))).toFixed(1)} per click
                 </Text>
               )}
               
               {building.type === 'multiplier' && (
                 <Text style={styles.effectText}>
-                  +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * building.prestigeBonus || 0)) * 100).toFixed(1)}% bonus
+                  +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * prestigeBonus || 0)) * 100).toFixed(1)}% bonus
                 </Text>
               )}
             </View>
