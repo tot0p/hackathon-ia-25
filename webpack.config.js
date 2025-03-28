@@ -5,8 +5,9 @@ module.exports = async function (env, argv) {
   const config = await createExpoWebpackConfigAsync(env, argv);
   
 
+  const isProduction = process.env.NODE_ENV === 'production' || env.mode === 'production';
 
-  if (env.mode === 'production') {
+  if (isProduction) {
     config.output.publicPath = "./";
   }
 
