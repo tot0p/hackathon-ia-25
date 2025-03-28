@@ -4,7 +4,6 @@ const path = require('path');
 module.exports = async function (env, argv) {
   const config = await createExpoWebpackConfigAsync(env, argv);
   
-
   const isProduction = process.env.NODE_ENV === 'production' || env.mode === 'production';
 
   if (isProduction) {
@@ -20,6 +19,15 @@ module.exports = async function (env, argv) {
     "util": require.resolve("util/"),
     "vm": require.resolve("vm-browserify")  // Add vm polyfill
   };
+
+  // Add file loader rule for audio files
+  config.module.rules.push({
+    test: /\.(mp3|wav|ogg)$/,
+    type: 'asset/resource',
+    generator: {
+      filename: 'static/media/[name].[hash:8][ext]'
+    }
+  });
 
   // Add plugins for the polyfills
   const webpack = require('webpack');

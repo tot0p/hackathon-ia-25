@@ -1,12 +1,19 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-// Import audio files directly using require
+// Import audio files as URLs
+import backgroundMusic from '../../assets/ambient_music.mp3';
+import buySound from '../../assets/buy.mp3';
+import prestigeSound from '../../assets/prestige.mp3';
+import achievementSound from '../../assets/achievement.mp3';
+import notificationSound from '../../assets/notification.mp3';
+
+// Define audio files map with imported URLs
 const AUDIO_FILES = {
-  background: require('../../assets/ambient_music.mp3'),
-  buy: require('../../assets/buy.mp3'),
-  prestige: require('../../assets/prestige.mp3'),
-  achievement: require('../../assets/achievement.mp3'),
-  notification: require('../../assets/notification.mp3')
+  background: backgroundMusic,
+  buy: buySound,
+  prestige: prestigeSound,
+  achievement: achievementSound,
+  notification: notificationSound
 };
 
 const useAudio = () => {

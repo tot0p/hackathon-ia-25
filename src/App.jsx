@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
     right: 10, // Changed from left to right
     zIndex: 1000, // Ensure it's above everything else
     maxWidth: '80%',
-    maxHeight: 150,
+    maxHeight: 500,
     // Removed duplicate position: fixed property
   },
   notificationsList: {
