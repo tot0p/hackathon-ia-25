@@ -56,7 +56,8 @@ const App = () => {
     getBuildingCost,
     checkCanPrestige,
     getPrestigeBonus,
-    addCheatPoints
+    addCheatPoints,
+    dismissNotification
   } = useGameState();
 
   // Initialize audio system
@@ -180,48 +181,50 @@ const App = () => {
   const NotificationSystem = useCallback(() => {
     if (gameState.notifications.length === 0) return null;
     
-    const renderNotification = ({ item }) => {
-      let bgColor = '#4CAF50'; // default green
-      let iconColor = '#E8F5E9';
-      
-      // Different styles for different notification types
-      if (item.type === 'achievement') {
-        bgColor = '#FFC107'; // amber
-        iconColor = '#FFF9C4';
-      } else if (item.type === 'prestige') {
-        bgColor = '#FF9800'; // orange
-        iconColor = '#FFF3E0';
-      }
-      
-      return (
-        <Animated.View style={[styles.notification, { backgroundColor: bgColor }]}>
-          <View style={[styles.notificationIconContainer, { backgroundColor: iconColor }]}>
-            <Text style={styles.notificationIcon}>{item.icon}</Text>
-          </View>
-          <View style={styles.notificationContent}>
-            <Text style={styles.notificationTitle}>{item.title}</Text>
-            <Text style={styles.notificationMessage}>{item.message}</Text>
-            {item.condition && (
-              <Text style={styles.notificationCondition}>
-                Condition: {item.condition}
-              </Text>
-            )}
-          </View>
-        </Animated.View>
-      );
-    };
-    
     return (
       <View style={styles.notificationsContainer}>
-        <FlatList
-          data={gameState.notifications}
-          renderItem={renderNotification}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.notificationsList}
-        />
+        {gameState.notifications.map((item) => {
+          let bgColor = '#4CAF50'; // default green
+          let iconColor = '#E8F5E9';
+          
+          // Different styles for different notification types
+          if (item.type === 'achievement') {
+            bgColor = '#FFC107'; // amber
+            iconColor = '#FFF9C4';
+          } else if (item.type === 'prestige') {
+            bgColor = '#FF9800'; // orange
+            iconColor = '#FFF3E0';
+          }
+          
+          return (
+            <div 
+              key={item.id}
+              onClick={() => dismissNotification(item.id)}
+              style={{
+                cursor: 'pointer',
+                marginBottom: 10
+              }}
+            >
+              <View style={[styles.notification, { backgroundColor: bgColor }]}>
+                <View style={[styles.notificationIconContainer, { backgroundColor: iconColor }]}>
+                  <Text style={styles.notificationIcon}>{item.icon}</Text>
+                </View>
+                <View style={styles.notificationContent}>
+                  <Text style={styles.notificationTitle}>{item.title}</Text>
+                  <Text style={styles.notificationMessage}>{item.message}</Text>
+                  {item.condition && (
+                    <Text style={styles.notificationCondition}>
+                      Condition: {item.condition}
+                    </Text>
+                  )}
+                </View>
+              </View>
+            </div>
+          );
+        })}
       </View>
     );
-  }, [gameState.notifications]);
+  }, [gameState.notifications, dismissNotification]);
 
   const renderTabContent = useCallback(() => {
     switch (activeTab) {

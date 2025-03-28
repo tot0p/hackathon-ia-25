@@ -234,7 +234,7 @@ const useGameState = () => {
           ...prevState,
           notifications: prevState.notifications.slice(1), // Remove the oldest notification
         }));
-      }, 5000);
+      }, 5000); // Changed back from 1000 to 5000 milliseconds
       
       return () => clearTimeout(timer);
     }
@@ -431,6 +431,14 @@ const useGameState = () => {
     }
   }, []);
 
+  // Dismiss a specific notification by ID
+  const dismissNotification = useCallback((notificationId) => {
+    setGameState(prevState => ({
+      ...prevState,
+      notifications: prevState.notifications.filter(n => n.id !== notificationId)
+    }));
+  }, []);
+
   // Reset the game
   const resetGame = () => {
     if (window.confirm('Are you sure you want to reset your progress? This cannot be undone.')) {
@@ -447,6 +455,7 @@ const useGameState = () => {
     purchaseBuilding,
     prestigeBuilding,
     resetGame,
+    dismissNotification,
     pointsPerSecond: calculatePointsPerSecond(gameState.buildings, gameState.multipliers),
     clickValue: calculateClickValue(gameState.buildings, gameState.multipliers),
     getBuildingCost: (buildingId) => {
