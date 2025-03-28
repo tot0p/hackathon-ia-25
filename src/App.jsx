@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, memo, useMemo, useRef } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -10,7 +10,8 @@ import {
   Modal,
   Animated,
   FlatList,
-  TextInput
+  TextInput,
+  Switch
 } from 'react-native';
 
 // Import components
@@ -20,6 +21,28 @@ import Stats from './components/Stats';
 
 // Import game state hook
 import useGameState from './hooks/useGameState';
+// Import audio hook
+import useAudio from './hooks/useAudio';
+
+// Create a simple slider component since Slider is not available in React Native Web
+const CustomSlider = ({ value, minimumValue, maximumValue, onValueChange, disabled, minimumTrackTintColor, maximumTrackTintColor, thumbTintColor }) => {
+  return (
+    <input
+      type="range"
+      min={minimumValue || 0}
+      max={maximumValue || 1}
+      step={0.01}
+      value={value}
+      onChange={(e) => onValueChange(parseFloat(e.target.value))}
+      disabled={disabled}
+      style={{ 
+        flex: 2,
+        accentColor: minimumTrackTintColor || '#4CAF50',
+        opacity: disabled ? 0.5 : 1
+      }}
+    />
+  );
+};
 
 const App = () => {
   const {
@@ -36,14 +59,28 @@ const App = () => {
     addCheatPoints
   } = useGameState();
 
+  // Initialize audio system
+  const {
+    audioSettings,
+    playSound,
+    toggleMusic,
+    toggleSFX,
+    updateMusicVolume,
+    updateSFXVolume,
+    updateMasterVolume
+  } = useAudio();
+
   const [activeTab, setActiveTab] = useState('buildings');
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [cheatMenuVisible, setCheatMenuVisible] = useState(false);
+  const [settingsModalVisible, setSettingsModalVisible] = useState(false);
   const [pointsToAdd, setPointsToAdd] = useState('1000');
   
   // Memoize functions that will be passed to modals to prevent re-renders
   const handleCloseInfoModal = useCallback(() => setInfoModalVisible(false), []);
   const handleCloseCheatMenu = useCallback(() => setCheatMenuVisible(false), []);
+  const handleCloseSettingsModal = useCallback(() => setSettingsModalVisible(false), []);
+  
   const handleCheatPoints = useCallback(() => {
     const points = parseInt(pointsToAdd, 10);
     if (!isNaN(points) && points > 0) {
@@ -51,6 +88,69 @@ const App = () => {
       setCheatMenuVisible(false);
     }
   }, [pointsToAdd, addCheatPoints]);
+  
+  // Custom click handler that integrates sound
+  const handleGameClick = useCallback(() => {
+    handleClick();
+    // No sound on click to avoid too frequent sound playing
+  }, [handleClick]);
+
+  // Custom building purchase handler that integrates sound
+  const handleBuildingPurchase = useCallback((buildingId) => {
+    const success = purchaseBuilding(buildingId);
+    if (success) {
+      playSound('buy');
+    }
+    return success;
+  }, [purchaseBuilding, playSound]);
+
+  // Custom building prestige handler that integrates sound
+  const handleBuildingPrestige = useCallback((buildingId) => {
+    const success = prestigeBuilding(buildingId);
+    if (success) {
+      playSound('prestige');
+    }
+    return success;
+  }, [prestigeBuilding, playSound]);
+  
+  // Create a ref to track played notification sounds
+  const playedNotificationsRef = useRef(new Set());
+  
+  // Combined effect to handle all notification sounds in one place
+  useEffect(() => {
+    // Only play sound when a new notification is added (not when one is removed)
+    const notificationCount = gameState.notifications.length;
+    
+    if (notificationCount > 0) {
+      // Get the most recent notification
+      const latestNotification = gameState.notifications[notificationCount - 1];
+      
+      // Use a unique ID to make sure we don't play sounds for the same notification twice
+      const notificationId = latestNotification.id;
+      
+      // Only play if we haven't played this notification before
+      if (!playedNotificationsRef.current.has(notificationId)) {
+        // Play different sounds based on notification type
+        if (latestNotification.type === 'achievement') {
+          playSound('achievement');
+        } else if (latestNotification.type === 'prestige') {
+          playSound('prestige');
+        } else {
+          // For building unlocks and other general notifications
+          playSound('notification');
+        }
+        
+        // Mark this notification as played
+        playedNotificationsRef.current.add(notificationId);
+        
+        // Clean up old notification IDs to prevent memory leaks
+        if (playedNotificationsRef.current.size > 20) {
+          const oldestIds = Array.from(playedNotificationsRef.current).slice(0, 10);
+          oldestIds.forEach(id => playedNotificationsRef.current.delete(id));
+        }
+      }
+    }
+  }, [gameState.notifications.length, playSound]);
   
   // Function to handle key press for cheat code
   useEffect(() => {
@@ -130,8 +230,8 @@ const App = () => {
           <Buildings
             buildings={gameState.buildings}
             ecoPoints={gameState.resources.ecoPoints}
-            onPurchase={purchaseBuilding}
-            prestigeBuilding={prestigeBuilding}
+            onPurchase={handleBuildingPurchase}
+            prestigeBuilding={handleBuildingPrestige}
             checkCanPrestige={checkCanPrestige}
             getPrestigeBonus={getPrestigeBonus}
             getBuildingCost={getBuildingCost}
@@ -150,8 +250,8 @@ const App = () => {
         return <Buildings />;
     }
   }, [activeTab, gameState.buildings, gameState.resources.ecoPoints, gameState.stats, 
-      gameState.resources, pointsPerSecond, gameState.achievements, purchaseBuilding, 
-      prestigeBuilding, checkCanPrestige, getPrestigeBonus, getBuildingCost]);
+      gameState.resources, pointsPerSecond, gameState.achievements, handleBuildingPurchase, 
+      handleBuildingPrestige, checkCanPrestige, getPrestigeBonus, getBuildingCost]);
 
   // Completely memoize the modal components to prevent re-renders
   const InfoModal = useMemo(() => (
@@ -261,21 +361,134 @@ const App = () => {
     </Modal>
   ), [cheatMenuVisible, handleCloseCheatMenu, pointsToAdd, handleCheatPoints]);
 
+  // Settings modal for audio controls
+  const SettingsModal = useMemo(() => (
+    <Modal
+      animationType="none"
+      transparent={true}
+      visible={settingsModalVisible}
+      onRequestClose={handleCloseSettingsModal}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Settings</Text>
+          
+          <View style={styles.settingsSection}>
+            <Text style={styles.sectionTitle}>Audio</Text>
+            
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>Master Volume</Text>
+              <CustomSlider
+                value={audioSettings.masterVolume}
+                minimumValue={0}
+                maximumValue={1}
+                onValueChange={updateMasterVolume}
+                minimumTrackTintColor="#4CAF50"
+                maximumTrackTintColor="#D8D8D8"
+                thumbTintColor="#2E7D32"
+              />
+              <Text style={styles.volumeValue}>{Math.round(audioSettings.masterVolume * 100)}%</Text>
+            </View>
+            
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>Music Volume</Text>
+              <CustomSlider
+                value={audioSettings.musicVolume}
+                minimumValue={0}
+                maximumValue={1}
+                onValueChange={updateMusicVolume}
+                minimumTrackTintColor="#4CAF50"
+                maximumTrackTintColor="#D8D8D8"
+                thumbTintColor="#2E7D32"
+                disabled={!audioSettings.musicEnabled}
+              />
+              <Text style={styles.volumeValue}>{Math.round(audioSettings.musicVolume * 100)}%</Text>
+            </View>
+            
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>Sound Effects Volume</Text>
+              <CustomSlider
+                value={audioSettings.sfxVolume}
+                minimumValue={0}
+                maximumValue={1}
+                onValueChange={updateSFXVolume}
+                minimumTrackTintColor="#4CAF50"
+                maximumTrackTintColor="#D8D8D8"
+                thumbTintColor="#2E7D32"
+                disabled={!audioSettings.sfxEnabled}
+              />
+              <Text style={styles.volumeValue}>{Math.round(audioSettings.sfxVolume * 100)}%</Text>
+            </View>
+            
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>Enable Music</Text>
+              <Switch
+                trackColor={{ false: "#D8D8D8", true: "#81C784" }}
+                thumbColor={audioSettings.musicEnabled ? "#4CAF50" : "#f4f3f4"}
+                ios_backgroundColor="#D8D8D8"
+                onValueChange={toggleMusic}
+                value={audioSettings.musicEnabled}
+              />
+            </View>
+            
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>Enable Sound Effects</Text>
+              <Switch
+                trackColor={{ false: "#D8D8D8", true: "#81C784" }}
+                thumbColor={audioSettings.sfxEnabled ? "#4CAF50" : "#f4f3f4"}
+                ios_backgroundColor="#D8D8D8"
+                onValueChange={toggleSFX}
+                value={audioSettings.sfxEnabled}
+              />
+            </View>
+          </View>
+          
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={handleCloseSettingsModal}
+          >
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  ), [
+    settingsModalVisible, 
+    handleCloseSettingsModal, 
+    audioSettings, 
+    updateMasterVolume, 
+    updateMusicVolume, 
+    updateSFXVolume, 
+    toggleMusic, 
+    toggleSFX
+  ]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#E8F5E9" />
       
       <View style={styles.header}>
         <Text style={styles.title}>EcoClicker</Text>
-        <TouchableOpacity onPress={() => setInfoModalVisible(true)}>
-          <Text style={styles.infoButton}>ℹ️</Text>
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity 
+            style={styles.headerButton} 
+            onPress={() => setSettingsModalVisible(true)}
+          >
+            <Text style={styles.headerButtonText}>⚙️</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.headerButton} 
+            onPress={() => setInfoModalVisible(true)}
+          >
+            <Text style={styles.headerButtonText}>ℹ️</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       
       <NotificationSystem />
       
       <ClickArea 
-        onPress={handleClick} 
+        onPress={handleGameClick} 
         clickValue={clickValue} 
         ecoPoints={gameState.resources.ecoPoints}
         pointsPerSecond={pointsPerSecond}
@@ -311,6 +524,7 @@ const App = () => {
       
       {InfoModal}
       {CheatMenu}
+      {SettingsModal}
     </SafeAreaView>
   );
 };
@@ -332,7 +546,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
   },
-  infoButton: {
+  headerButtons: {
+    flexDirection: 'row',
+  },
+  headerButton: {
+    marginLeft: 10,
+  },
+  headerButtonText: {
     fontSize: 24,
   },
   tabBar: {
@@ -539,6 +759,28 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  settingsSection: {
+    width: '100%',
+  },
+  settingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  settingLabel: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+  },
+  slider: {
+    flex: 2,
+  },
+  volumeValue: {
+    flex: 1,
+    textAlign: 'right',
+    fontSize: 16,
+    color: '#333',
   },
 });
 
