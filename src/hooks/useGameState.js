@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import buildingsData from '../data/buildings.json';
 import achievementsData from '../data/achievements.json';
 
@@ -393,9 +393,8 @@ const useGameState = () => {
     return true;
   };
 
-  // Function to add cheat points
-  const addCheatPoints = () => {
-    const points = parseInt(pointsToAdd, 10);
+  // Function to add cheat points - memoized to prevent unnecessary re-renders
+  const addCheatPoints = useCallback((points) => {
     if (!isNaN(points) && points > 0) {
       setGameState(prevState => ({
         ...prevState,
@@ -408,9 +407,8 @@ const useGameState = () => {
           totalEcoPoints: prevState.stats.totalEcoPoints + points,
         },
       }));
-      setCheatMenuVisible(false);
     }
-  };
+  }, []);
 
   // Reset the game
   const resetGame = () => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -139,13 +139,13 @@ const App = () => {
     }
   };
 
-  // Information modal with game explanation and ecological facts
-  const InfoModal = () => (
+  // Memoize the modal components to prevent unnecessary re-renders
+  const InfoModalMemo = memo(({ visible, setVisible }) => (
     <Modal
-      animationType="slide"
+      animationType="none"
       transparent={true}
-      visible={infoModalVisible}
-      onRequestClose={() => setInfoModalVisible(false)}
+      visible={visible}
+      onRequestClose={() => setVisible(false)}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
@@ -196,22 +196,22 @@ const App = () => {
           
           <TouchableOpacity
             style={styles.closeButton}
-            onPress={() => setInfoModalVisible(false)}
+            onPress={() => setVisible(false)}
           >
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
-  );
+  ));
 
-  // Cheat menu modal
-  const CheatMenu = () => (
+  // Memoize the cheat menu to prevent unnecessary re-renders
+  const CheatMenuMemo = memo(({ visible, setVisible, pointsToAdd, setPointsToAdd, addCheatPoints }) => (
     <Modal
-      animationType="slide"
+      animationType="none"
       transparent={true}
-      visible={cheatMenuVisible}
-      onRequestClose={() => setCheatMenuVisible(false)}
+      visible={visible}
+      onRequestClose={() => setVisible(false)}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
@@ -230,14 +230,20 @@ const App = () => {
           <View style={styles.cheatButtonsRow}>
             <TouchableOpacity
               style={styles.cheatButton}
-              onPress={() => gameState.addCheatPoints(parseInt(pointsToAdd, 10))}
+              onPress={() => {
+                const points = parseInt(pointsToAdd, 10);
+                if (!isNaN(points) && points > 0) {
+                  addCheatPoints(points);
+                  setVisible(false);
+                }
+              }}
             >
               <Text style={styles.cheatButtonText}>Add Points</Text>
             </TouchableOpacity>
             
             <TouchableOpacity
               style={[styles.cheatButton, styles.cancelButton]}
-              onPress={() => setCheatMenuVisible(false)}
+              onPress={() => setVisible(false)}
             >
               <Text style={styles.cheatButtonText}>Close</Text>
             </TouchableOpacity>
@@ -245,7 +251,7 @@ const App = () => {
         </View>
       </View>
     </Modal>
-  );
+  ));
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -295,8 +301,14 @@ const App = () => {
         </TouchableOpacity>
       </View>
       
-      <InfoModal />
-      <CheatMenu />
+      <InfoModalMemo visible={infoModalVisible} setVisible={setInfoModalVisible} />
+      <CheatMenuMemo 
+        visible={cheatMenuVisible} 
+        setVisible={setCheatMenuVisible} 
+        pointsToAdd={pointsToAdd} 
+        setPointsToAdd={setPointsToAdd} 
+        addCheatPoints={gameState.addCheatPoints} 
+      />
     </SafeAreaView>
   );
 };
@@ -365,6 +377,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    position: 'fixed', // Add fixed position for modals
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1100, // Higher z-index than notifications
   },
   modalContent: {
     width: '90%',
@@ -373,57 +391,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 15,
-  },
-  modalScrollView: {
-    width: '100%',
-    marginBottom: 15,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#388E3C',
-    marginTop: 15,
-    marginBottom: 8,
-  },
-  modalText: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 10,
-    lineHeight: 22,
-  },
-  factContainer: {
-    marginBottom: 15,
-    padding: 10,
-    backgroundColor: '#E8F5E9',
-    borderRadius: 8,
-  },
-  factTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 5,
-  },
-  factText: {
-    fontSize: 14,
-    color: '#333',
-    lineHeight: 20,
-  },
-  closeButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+    zIndex: 1200, // Even higher z-index
   },
   notificationsContainer: {
     position: 'absolute',
@@ -432,7 +400,7 @@ const styles = StyleSheet.create({
     zIndex: 1000, // Ensure it's above everything else
     maxWidth: '80%',
     maxHeight: 150,
-    position: 'fixed', // Add fixed position to keep it visible when scrolling
+    // Removed duplicate position: fixed property
   },
   notificationsList: {
     // No horizontal padding needed since we have left margin
@@ -514,6 +482,61 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: '#F44336',
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#2E7D32',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalScrollView: {
+    width: '100%',
+    maxHeight: 400,
+    marginBottom: 15,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#388E3C',
+    marginTop: 15,
+    marginBottom: 8,
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 10,
+    lineHeight: 22,
+  },
+  factContainer: {
+    backgroundColor: '#E8F5E9',
+    borderRadius: 8,
+    padding: 12,
+    marginVertical: 8,
+    width: '100%',
+  },
+  factTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2E7D32',
+    marginBottom: 5,
+  },
+  factText: {
+    fontSize: 14,
+    color: '#333',
+    lineHeight: 20,
+  },
+  closeButton: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
