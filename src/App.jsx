@@ -12,7 +12,7 @@ import {
 
 // Import components
 import ClickArea from './components/ClickArea';
-import Upgrades from './components/Upgrades';
+import Buildings from './components/Buildings';
 import Stats from './components/Stats';
 
 // Import game state hook
@@ -22,14 +22,14 @@ const App = () => {
   const {
     gameState,
     handleClick,
-    purchaseUpgrade,
+    purchaseBuilding,
     resetGame,
     pointsPerSecond,
     clickValue,
-    getUpgradeCost
+    getBuildingCost
   } = useGameState();
 
-  const [activeTab, setActiveTab] = useState('upgrades');
+  const [activeTab, setActiveTab] = useState('buildings');
   const [infoModalVisible, setInfoModalVisible] = useState(false);
 
   // Function to format large numbers with K, M, B suffixes
@@ -42,13 +42,13 @@ const App = () => {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'upgrades':
+      case 'buildings':
         return (
-          <Upgrades
-            upgrades={gameState.upgrades}
+          <Buildings
+            buildings={gameState.buildings}
             ecoPoints={gameState.resources.ecoPoints}
-            onPurchase={purchaseUpgrade}
-            getUpgradeCost={getUpgradeCost}
+            onPurchase={purchaseBuilding}
+            getBuildingCost={getBuildingCost}
           />
         );
       case 'stats':
@@ -61,7 +61,7 @@ const App = () => {
           />
         );
       default:
-        return <Upgrades />;
+        return <Buildings />;
     }
   };
 
@@ -80,14 +80,14 @@ const App = () => {
           <ScrollView style={styles.modalScrollView}>
             <Text style={styles.sectionTitle}>How to Play</Text>
             <Text style={styles.modalText}>
-              Click the Earth to generate eco points. Use your points to purchase upgrades that 
+              Click the Earth to generate eco points. Use your points to purchase buildings that 
               will help you generate more points automatically or increase your click value.
             </Text>
             
             <Text style={styles.sectionTitle}>Ecological Impact</Text>
             <Text style={styles.modalText}>
               While EcoClicker is just a game, it aims to raise awareness about ecological issues. 
-              Each upgrade represents real-world actions we can take to help our planet.
+              Each building represents real-world actions we can take to help our planet.
             </Text>
             
             <Text style={styles.sectionTitle}>Eco Facts</Text>
@@ -142,26 +142,20 @@ const App = () => {
         </TouchableOpacity>
       </View>
       
-      <View style={styles.resourceBar}>
-        <View style={styles.resource}>
-          <Text style={styles.resourceValue}>{formatNumber(gameState.resources.ecoPoints)}</Text>
-          <Text style={styles.resourceLabel}>Eco Points</Text>
-        </View>
-        
-        <View style={styles.resource}>
-          <Text style={styles.resourceValue}>{formatNumber(pointsPerSecond)}</Text>
-          <Text style={styles.resourceLabel}>per second</Text>
-        </View>
-      </View>
-      
-      <ClickArea onPress={handleClick} clickValue={clickValue} />
+      <ClickArea 
+        onPress={handleClick} 
+        clickValue={clickValue} 
+        ecoPoints={gameState.resources.ecoPoints}
+        pointsPerSecond={pointsPerSecond}
+        formatNumber={formatNumber}
+      />
       
       <View style={styles.tabBar}>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'upgrades' && styles.activeTab]}
-          onPress={() => setActiveTab('upgrades')}
+          style={[styles.tab, activeTab === 'buildings' && styles.activeTab]}
+          onPress={() => setActiveTab('buildings')}
         >
-          <Text style={[styles.tabText, activeTab === 'upgrades' && styles.activeTabText]}>Upgrades</Text>
+          <Text style={[styles.tabText, activeTab === 'buildings' && styles.activeTabText]}>Buildings</Text>
         </TouchableOpacity>
         
         <TouchableOpacity
@@ -206,24 +200,6 @@ const styles = StyleSheet.create({
   },
   infoButton: {
     fontSize: 24,
-  },
-  resourceBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    backgroundColor: '#81C784',
-  },
-  resource: {
-    alignItems: 'center',
-  },
-  resourceValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  resourceLabel: {
-    fontSize: 12,
-    color: '#E8F5E9',
   },
   tabBar: {
     flexDirection: 'row',
