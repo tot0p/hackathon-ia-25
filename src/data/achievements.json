@@ -784,5 +784,106 @@
     "conditionValue": 1000000000,
     "conditionText": "Planted 1,000,000,000 trees",
     "icon": "🌎"
+  },
+  
+  {
+    "id": "co2_reduced_1",
+    "name": "Carbon Reducer",
+    "description": "Reduce 1 kg of CO2 emissions",
+    "unlocked": false,
+    "conditionType": "co2Reduced",
+    "conditionValue": 1,
+    "conditionText": "Reduced 1 kg of CO2 emissions",
+    "icon": "🍃"
+  },
+  {
+    "id": "co2_reduced_10",
+    "name": "Carbon Minimizer",
+    "description": "Reduce 10 kg of CO2 emissions",
+    "unlocked": false,
+    "conditionType": "co2Reduced",
+    "conditionValue": 10,
+    "conditionText": "Reduced 10 kg of CO2 emissions",
+    "icon": "🍃"
+  },
+  {
+    "id": "co2_reduced_100",
+    "name": "Carbon Fighter",
+    "description": "Reduce 100 kg of CO2 emissions",
+    "unlocked": false,
+    "conditionType": "co2Reduced",
+    "conditionValue": 100,
+    "conditionText": "Reduced 100 kg of CO2 emissions",
+    "icon": "🍃"
+  },
+  {
+    "id": "co2_reduced_1000",
+    "name": "Carbon Warrior",
+    "description": "Reduce 1 tonne of CO2 emissions",
+    "unlocked": false,
+    "conditionType": "co2Reduced",
+    "conditionValue": 1000,
+    "conditionText": "Reduced 1 tonne of CO2 emissions",
+    "icon": "🌬️"
+  },
+  {
+    "id": "co2_reduced_10000",
+    "name": "Carbon Champion",
+    "description": "Reduce 10 tonnes of CO2 emissions",
+    "unlocked": false,
+    "conditionType": "co2Reduced",
+    "conditionValue": 10000,
+    "conditionText": "Reduced 10 tonnes of CO2 emissions",
+    "icon": "🌬️"
+  },
+  {
+    "id": "co2_reduced_100000",
+    "name": "Climate Guardian",
+    "description": "Reduce 100 tonnes of CO2 emissions",
+    "unlocked": false,
+    "conditionType": "co2Reduced",
+    "conditionValue": 100000,
+    "conditionText": "Reduced 100 tonnes of CO2 emissions",
+    "icon": "🌬️"
+  },
+  {
+    "id": "co2_reduced_1000000",
+    "name": "Climate Savior",
+    "description": "Reduce 1,000 tonnes of CO2 emissions",
+    "unlocked": false,
+    "conditionType": "co2Reduced",
+    "conditionValue": 1000000,
+    "conditionText": "Reduced 1,000 tonnes of CO2 emissions",
+    "icon": "❄️"
+  },
+  {
+    "id": "co2_reduced_10000000",
+    "name": "Global Cooling Hero",
+    "description": "Reduce 10,000 tonnes of CO2 emissions",
+    "unlocked": false,
+    "conditionType": "co2Reduced",
+    "conditionValue": 10000000,
+    "conditionText": "Reduced 10,000 tonnes of CO2 emissions",
+    "icon": "❄️"
+  },
+  {
+    "id": "co2_reduced_100000000",
+    "name": "Climate Change Reverser",
+    "description": "Reduce 100,000 tonnes of CO2 emissions",
+    "unlocked": false,
+    "conditionType": "co2Reduced",
+    "conditionValue": 100000000,
+    "conditionText": "Reduced 100,000 tonnes of CO2 emissions",
+    "icon": "🌡️"
+  },
+  {
+    "id": "co2_reduced_1000000000",
+    "name": "Earth's Climate Protector",
+    "description": "Reduce 1,000,000 tonnes of CO2 emissions",
+    "unlocked": false,
+    "conditionType": "co2Reduced",
+    "conditionValue": 1000000000,
+    "conditionText": "Reduced 1,000,000 tonnes of CO2 emissions",
+    "icon": "🌏"
   }
 ]

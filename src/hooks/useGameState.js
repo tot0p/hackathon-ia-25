@@ -89,6 +89,8 @@ const checkAchievementCondition = (achievement, gameState) => {
       return gameState.stats.totalPrestiges >= achievement.conditionValue;
     case 'treesPlanted':
       return gameState.stats.treesPlanted >= achievement.conditionValue;
+    case 'co2Reduced':
+      return gameState.stats.co2Reduced >= achievement.conditionValue;
     case 'buildingLevel':
       const building = gameState.buildings.find(b => b.id === achievement.conditionBuilding);
       return building && building.level >= achievement.conditionValue;
