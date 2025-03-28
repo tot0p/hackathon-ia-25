@@ -97,6 +97,9 @@ const checkAchievementCondition = (achievement, gameState) => {
 };
 
 const useGameState = () => {
+  // Add shouldReset state to track reset requests
+  const [shouldReset, setShouldReset] = useState(false);
+  
   const [gameState, setGameState] = useState(() => {
     // Try to load the game state from localStorage
     const savedState = localStorage.getItem('ecoClickerSave');
@@ -152,6 +155,28 @@ const useGameState = () => {
   // Save game state to localStorage whenever it changes
   useEffect(() => {
     const saveGame = () => {
+      // Check if we should reset the game first
+      if (shouldReset) {
+        // Reset the game state to initial values
+        const emptyState = {
+          ...initialState,
+          lastSaved: new Date().toISOString()
+        };
+        
+        // Save the empty state
+        localStorage.setItem('ecoClickerSave', JSON.stringify(emptyState));
+        
+        // Reset the flag
+        setShouldReset(false);
+        
+        // Update the current state
+        setGameState(initialState);
+        
+        console.log('Game has been reset and saved with default values');
+        return;
+      }
+      
+      // Normal save operation if no reset is needed
       const stateToSave = {
         ...gameState,
         lastSaved: new Date().toISOString(),
@@ -167,7 +192,7 @@ const useGameState = () => {
       clearInterval(saveInterval);
       saveGame();
     };
-  }, [gameState]);
+  }, [gameState, shouldReset]);
 
   // Passive income effect - runs every second
   useEffect(() => {
@@ -442,10 +467,20 @@ const useGameState = () => {
   // Reset the game
   const resetGame = () => {
     if (window.confirm('Are you sure you want to reset your progress? This cannot be undone.')) {
-      // Clear all game data from localStorage
-      localStorage.removeItem('ecoClickerSave');
       // Reset to initial state
       setGameState(initialState);
+      
+      // Immediately save the default values
+      const defaultSave = {
+        ...initialState,
+        lastSaved: new Date().toISOString()
+      };
+      
+      // Save the default state to localStorage
+      localStorage.setItem('ecoClickerSave', JSON.stringify(defaultSave));
+      
+      console.log('Game reset completed: Default values saved');
+      
     }
   };
 
