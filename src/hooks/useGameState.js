@@ -180,6 +180,8 @@ const useGameState = () => {
         return parsedState;
       } catch (error) {
         console.error('Failed to parse saved game state:', error);
+        // Delete corrupted save data
+        localStorage.removeItem('ecoClickerSave');
         return initialState;
       }
     }
