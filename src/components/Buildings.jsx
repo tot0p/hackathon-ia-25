@@ -240,7 +240,10 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
             style={[styles.buyModeButton, buyMode.value === mode.value && styles.selectedBuyModeButton]}
             onPress={() => setBuyMode(mode)}
           >
-            <Text style={styles.buyModeButtonText}>{mode.label}</Text>
+            <Text style={[
+              styles.buyModeButtonText, 
+              buyMode.value === mode.value && styles.selectedBuyModeButtonText
+            ]}>{mode.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -423,19 +426,50 @@ const styles = StyleSheet.create({
   buyModeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 10,
+    marginBottom: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 10,
+    padding: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   buyModeButton: {
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: '#E0E0E0',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: '#DCEDC8',
+    borderWidth: 1,
+    borderColor: '#AED581',
+    minWidth: 70,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 1,
   },
   selectedBuyModeButton: {
-    backgroundColor: '#BDBDBD',
+    backgroundColor: '#81C784',
+    borderColor: '#43A047',
+    shadowColor: '#388E3C',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
   },
   buyModeButtonText: {
     fontSize: 14,
     fontWeight: 'bold',
+    color: '#33691E',
+  },
+  selectedBuyModeButtonText: {
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 1,
   },
 });
 
