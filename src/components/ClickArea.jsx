@@ -11,28 +11,28 @@ const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumb
   // Use the styles function with isWeb parameter
   const currentStyles = styles(isWeb);
   
-  // State for the advertising banner
+  // State for the tips display
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
-  const [isEcoEducationUnlocked, setIsEcoEducationUnlocked] = useState(false);
+  const [shouldShowEcoTips, setShouldShowEcoTips] = useState(false);
   
-  // Check if eco_education is unlocked
+  // Check if eco_education has been purchased (level > 0 or prestige > 0)
   useEffect(() => {
     if (buildings) {
       const ecoEducation = buildings.find(building => building.id === 'eco_education');
-      setIsEcoEducationUnlocked(ecoEducation && ecoEducation.unlocked);
+      setShouldShowEcoTips(ecoEducation && (ecoEducation.level > 0 || ecoEducation.prestigeLevel > 0));
     }
   }, [buildings]);
   
   // Change the tip every 30 seconds
   useEffect(() => {
-    if (isEcoEducationUnlocked) {
+    if (shouldShowEcoTips) {
       const tipInterval = setInterval(() => {
         setCurrentTipIndex(prevIndex => (prevIndex + 1) % carbonTips.length);
       }, 30000);
       
       return () => clearInterval(tipInterval);
     }
-  }, [isEcoEducationUnlocked]);
+  }, [shouldShowEcoTips]);
 
   // Function to handle clicking on the tip to change it
   const handleTipClick = () => {
@@ -93,8 +93,8 @@ const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumb
         currentStyles.container,
         isWeb && currentStyles.webContainer
       ]}>
-        {/* Eco Tips Banner - Only shown when eco_education is unlocked */}
-        {isEcoEducationUnlocked && (
+        {/* Eco Tips Banner - Only shown when eco_education level > 0 */}
+        {shouldShowEcoTips && (
           <TouchableOpacity 
             onPress={handleTipClick}
             style={[
