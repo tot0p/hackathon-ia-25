@@ -1,1 +1,1 @@
-# hackaton-ia-2025
+# hackathon-ia-25
