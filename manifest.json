@@ -1,0 +1,8 @@
+{
+  "display": "standalone",
+  "lang": "en",
+  "name": "EcoClicker",
+  "short_name": "EcoClicker",
+  "start_url": "/?utm_source=web_app_manifest",
+  "orientation": "portrait"
+}
