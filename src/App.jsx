@@ -246,10 +246,7 @@ const App = () => {
       case 'stats':
         return (
           <Stats
-            stats={gameState.stats}
-            resources={gameState.resources}
-            pointsPerSecond={pointsPerSecond}
-            achievements={gameState.achievements}
+            gameState={gameState}
           />
         );
       default:
