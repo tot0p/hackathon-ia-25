@@ -158,6 +158,8 @@ const styles = (isWeb) => {
     webContainer: {
       width: '80%',
       maxWidth: 600,
+      height: 'auto',
+      minHeight: 340,
       marginHorizontal: 'auto',
     },
     pointsDisplay: {
@@ -249,9 +251,10 @@ const styles = (isWeb) => {
     },
     floatingText: {
       position: 'absolute',
-      fontSize: 18,
+      zIndex : 1,
+      fontSize: 30,
       fontWeight: 'bold',
-      color: '#4CAF50',
+      color: '#2f8032',
     },
     pointsPerSecondContainer: {
       marginTop: 15,
