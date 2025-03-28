@@ -6,8 +6,9 @@ module.exports = async function (env, argv) {
   
 
 
-  if (process.platform === 'linux')
-  config.output.publicPath = "./";
+  if (env.mode === 'production') {
+    config.output.publicPath = "./";
+  }
 
   // Add polyfills for node core modules
   config.resolve.fallback = {
