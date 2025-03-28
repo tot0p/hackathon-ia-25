@@ -38,6 +38,7 @@ const initialState = {
     particlesEnabled: true,
   },
   lastSaved: null,
+  lastAutoSave: null,
 };
 
 // Calculate building cost based on base cost, current level, and prestige level
@@ -99,6 +100,10 @@ const checkAchievementCondition = (achievement, gameState) => {
 const useGameState = () => {
   // Add shouldReset state to track reset requests
   const [shouldReset, setShouldReset] = useState(false);
+  // Add ref for tracking if there are pending changes to save
+  const hasPendingChanges = useRef(false);
+  // Add ref for tracking when the last auto-save happened
+  const lastAutoSaveTime = useRef(new Date());
   
   const [gameState, setGameState] = useState(() => {
     // Try to load the game state from localStorage
@@ -154,13 +159,18 @@ const useGameState = () => {
 
   // Save game state to localStorage whenever it changes
   useEffect(() => {
+    // Mark that changes are pending whenever the game state changes
+    hasPendingChanges.current = true;
+    
+    // Auto-save function
     const saveGame = () => {
       // Check if we should reset the game first
       if (shouldReset) {
         // Reset the game state to initial values
         const emptyState = {
           ...initialState,
-          lastSaved: new Date().toISOString()
+          lastSaved: new Date().toISOString(),
+          lastAutoSave: new Date().toISOString()
         };
         
         // Save the empty state
@@ -176,21 +186,53 @@ const useGameState = () => {
         return;
       }
       
-      // Normal save operation if no reset is needed
-      const stateToSave = {
-        ...gameState,
-        lastSaved: new Date().toISOString(),
-      };
-      localStorage.setItem('ecoClickerSave', JSON.stringify(stateToSave));
+      // Only save if there are pending changes
+      if (hasPendingChanges.current) {
+        // Update timestamps
+        const now = new Date();
+        const stateToSave = {
+          ...gameState,
+          lastSaved: now.toISOString(),
+          lastAutoSave: now.toISOString()
+        };
+        
+        // Save to localStorage
+        localStorage.setItem('ecoClickerSave', JSON.stringify(stateToSave));
+        
+        // Reset the pending changes flag
+        hasPendingChanges.current = false;
+        
+        // Update the last auto-save time
+        lastAutoSaveTime.current = now;
+        
+        // Update game state with the new timestamps
+        setGameState(prevState => ({
+          ...prevState,
+          lastSaved: now.toISOString(),
+          lastAutoSave: now.toISOString()
+        }));
+      }
     };
 
-    // Save every 30 seconds
-    const saveInterval = setInterval(saveGame, 30000);
+    // Auto-save every 30 seconds
+    const saveInterval = setInterval(() => {
+      // Calculate time since last auto-save
+      const now = new Date();
+      const timeSinceLastSave = now.getTime() - lastAutoSaveTime.current.getTime();
+      const THIRTY_SECONDS = 30 * 1000;
+      
+      // Only save if enough time has passed or if there are pending changes
+      if (timeSinceLastSave >= THIRTY_SECONDS && hasPendingChanges.current) {
+        saveGame();
+      }
+    }, 1000); // Check every second, but only save if needed
     
-    // Save when the component unmounts
+    // Manual save on unmount
     return () => {
       clearInterval(saveInterval);
-      saveGame();
+      if (hasPendingChanges.current) {
+        saveGame();
+      }
     };
   }, [gameState, shouldReset]);
 
@@ -275,8 +317,8 @@ const useGameState = () => {
     newState.buildings = gameState.buildings.map(building => {
       if (!building.unlocked && building.unlockAt && gameState.resources.ecoPoints >= building.unlockAt) {
         hasChanges = true;
-        // Add notification for unlocked building
-        newNotifications.push({
+        // Add notification for unlocked building at the beginning of the array
+        newNotifications.unshift({
           id: `building-${building.id}`,
           type: 'building',
           title: 'New Building Unlocked!',
@@ -292,8 +334,8 @@ const useGameState = () => {
     newState.achievements = gameState.achievements.map(achievement => {
       if (!achievement.unlocked && checkAchievementCondition(achievement, gameState)) {
         hasChanges = true;
-        // Add notification for unlocked achievement
-        newNotifications.push({
+        // Add notification for unlocked achievement at the beginning of the array
+        newNotifications.unshift({
           id: `achievement-${achievement.id}`,
           type: 'achievement',
           title: 'Achievement Unlocked!',
@@ -415,9 +457,9 @@ const useGameState = () => {
       };
     }
     
-    // Add notification for prestige
+    // Add notification for prestige at the beginning of the array
     const newNotifications = [...gameState.notifications];
-    newNotifications.push({
+    newNotifications.unshift({
       id: `prestige-${building.id}-${Date.now()}`,
       type: 'prestige',
       title: 'Building Prestiged!',
