@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Platform, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Platform, Dimensions, ImageBackground } from 'react-native';
 import carbonTips from '../data/carbonTips.json';
 
 const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumber, buildings }) => {
@@ -76,100 +76,109 @@ const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumb
   };
 
   return (
-    <View style={[
-      currentStyles.container,
-      isWeb && currentStyles.webContainer
-    ]}>
-      {/* Carbon Tips Banner - Only shown when eco_education is unlocked */}
-      {isEcoEducationUnlocked && (
+    <ImageBackground 
+      source={require('../../assets/background.png')}
+      style={[
+        currentStyles.backgroundImage,
+        isWeb && currentStyles.webBackgroundImage
+      ]}
+      imageStyle={currentStyles.backgroundImageStyle}
+    >
+      <View style={[
+        currentStyles.container,
+        isWeb && currentStyles.webContainer
+      ]}>
+        {/* Carbon Tips Banner - Only shown when eco_education is unlocked */}
+        {isEcoEducationUnlocked && (
+          <View style={[
+            currentStyles.bannerContainer,
+            isWeb && currentStyles.webBannerContainer
+          ]}>
+            <Text style={[
+              currentStyles.bannerTitle,
+              isWeb && currentStyles.webBannerTitle
+            ]}>💡 Carbon Reduction Tip:</Text>
+            <Text style={[
+              currentStyles.bannerText,
+              isWeb && currentStyles.webBannerText
+            ]}>{carbonTips[currentTipIndex].tip}</Text>
+          </View>
+        )}
+
+        {/* Prominently displayed eco points at the top */}
         <View style={[
-          currentStyles.bannerContainer,
-          isWeb && currentStyles.webBannerContainer
+          currentStyles.pointsDisplay,
+          isWeb && currentStyles.webPointsDisplay
         ]}>
           <Text style={[
-            currentStyles.bannerTitle,
-            isWeb && currentStyles.webBannerTitle
-          ]}>💡 Carbon Reduction Tip:</Text>
+            currentStyles.pointsValue,
+            isWeb && currentStyles.webPointsValue
+          ]}>{formatNumber(ecoPoints)}</Text>
           <Text style={[
-            currentStyles.bannerText,
-            isWeb && currentStyles.webBannerText
-          ]}>{carbonTips[currentTipIndex].tip}</Text>
+            currentStyles.pointsLabel,
+            isWeb && currentStyles.webPointsLabel
+          ]}>Eco Points</Text>
         </View>
-      )}
 
-      {/* Prominently displayed eco points at the top */}
-      <View style={[
-        currentStyles.pointsDisplay,
-        isWeb && currentStyles.webPointsDisplay
-      ]}>
-        <Text style={[
-          currentStyles.pointsValue,
-          isWeb && currentStyles.webPointsValue
-        ]}>{formatNumber(ecoPoints)}</Text>
-        <Text style={[
-          currentStyles.pointsLabel,
-          isWeb && currentStyles.webPointsLabel
-        ]}>Eco Points</Text>
-      </View>
+        {/* Animations for the click effect */}
+        {animations.map(anim => (
+          <Animated.Text
+            key={anim.id}
+            style={[
+              currentStyles.floatingText,
+              {
+                opacity: anim.opacity,
+                transform: [
+                  { translateX: anim.position.x },
+                  { translateY: anim.translateY },
+                ],
+              },
+            ]}
+          >
+            {anim.value}
+          </Animated.Text>
+        ))}
 
-      {/* Animations for the click effect */}
-      {animations.map(anim => (
-        <Animated.Text
-          key={anim.id}
+        {/* Main click button */}
+        <TouchableOpacity
           style={[
-            currentStyles.floatingText,
-            {
-              opacity: anim.opacity,
-              transform: [
-                { translateX: anim.position.x },
-                { translateY: anim.translateY },
-              ],
-            },
+            currentStyles.clickButton,
+            isWeb && currentStyles.webClickButton
           ]}
+          onPress={handlePress}
+          activeOpacity={0.7}
         >
-          {anim.value}
-        </Animated.Text>
-      ))}
+          <View style={[
+            currentStyles.innerCircle,
+            isWeb && currentStyles.webInnerCircle
+          ]}>
+            <Text style={[
+              currentStyles.buttonText,
+              isWeb && currentStyles.webButtonText
+            ]}>🌍</Text>
+            <Text style={[
+              currentStyles.buttonSubtext,
+              isWeb && currentStyles.webButtonSubtext
+            ]}>Click to help!</Text>
+          </View>
+        </TouchableOpacity>
 
-      {/* Main click button */}
-      <TouchableOpacity
-        style={[
-          currentStyles.clickButton,
-          isWeb && currentStyles.webClickButton
-        ]}
-        onPress={handlePress}
-        activeOpacity={0.7}
-      >
+        {/* Points per second below the earth button */}
         <View style={[
-          currentStyles.innerCircle,
-          isWeb && currentStyles.webInnerCircle
+          currentStyles.pointsPerSecondContainer,
+          isWeb && currentStyles.webPointsPerSecondContainer
         ]}>
           <Text style={[
-            currentStyles.buttonText,
-            isWeb && currentStyles.webButtonText
-          ]}>🌍</Text>
+            currentStyles.pointsPerSecondValue,
+            isWeb && currentStyles.webPointsPerSecondValue
+          ]}>+{formatNumber(pointsPerSecond)}</Text>
           <Text style={[
-            currentStyles.buttonSubtext,
-            isWeb && currentStyles.webButtonSubtext
-          ]}>Click to help!</Text>
+            currentStyles.pointsPerSecondLabel,
+            isWeb && currentStyles.webPointsPerSecondLabel
+          ]}>points per second</Text>
         </View>
-      </TouchableOpacity>
-
-      {/* Points per second below the earth button */}
-      <View style={[
-        currentStyles.pointsPerSecondContainer,
-        isWeb && currentStyles.webPointsPerSecondContainer
-      ]}>
-        <Text style={[
-          currentStyles.pointsPerSecondValue,
-          isWeb && currentStyles.webPointsPerSecondValue
-        ]}>+{formatNumber(pointsPerSecond)}</Text>
-        <Text style={[
-          currentStyles.pointsPerSecondLabel,
-          isWeb && currentStyles.webPointsPerSecondLabel
-        ]}>points per second</Text>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -178,6 +187,28 @@ const styles = (isWeb) => {
   const webScale = isWeb ? 1.5 : 1;
 
   return StyleSheet.create({
+    backgroundImage: {
+      width: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+      // Restricting the height to not influence other panels
+      height: 'auto',
+      overflow: 'hidden',
+    },
+    webBackgroundImage: {
+      width: '100%', 
+      marginHorizontal: 'auto',
+    },
+    backgroundImageStyle: {
+      opacity: 0.3,
+      // Change from 'cover' to 'contain' to prevent overflow
+      resizeMode: 'contain',
+      width: '100%',
+      // Limit the height to prevent influencing other panels
+      height: '100%',
+      position: 'absolute',
+      top: 0,
+    },
     container: {
       alignItems: 'center',
       justifyContent: 'center',
@@ -186,10 +217,11 @@ const styles = (isWeb) => {
       position: 'relative',
       height: 'auto', // Changed to auto to accommodate the banner
       minHeight: 340, // Minimum height
-      backgroundColor: '#E8F5E9',
+      backgroundColor: 'rgba(232, 245, 233, 0.8)', // Make it slightly transparent to show background
       borderRadius: 15,
       marginVertical: 15, // Increased vertical margin
       marginTop: 20, // Extra margin at the top
+      width: '100%',
     },
     webContainer: {
       width: '80%',
