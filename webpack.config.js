@@ -4,7 +4,10 @@ const path = require('path');
 module.exports = async function (env, argv) {
   const config = await createExpoWebpackConfigAsync(env, argv);
   
-//  config.output.publicPath = "./";
+
+
+  if (process.platform === 'linux')
+  config.output.publicPath = "./";
 
   // Add polyfills for node core modules
   config.resolve.fallback = {
