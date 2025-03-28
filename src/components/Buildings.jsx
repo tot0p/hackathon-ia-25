@@ -85,6 +85,17 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
                   +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * prestigeBonus || 0)) * 100).toFixed(1)}% bonus
                 </Text>
               )}
+              
+              {building.type === 'hybrid' && (
+                <View>
+                  <Text style={styles.effectText}>
+                    +{(building.baseEffect * (building.level + 1) * (1 + (building.prestigeLevel * prestigeBonus || 0))).toFixed(1)} pts/sec
+                  </Text>
+                  <Text style={styles.effectText}>
+                    +{(building.clickEffect * (building.level + 1) * (1 + (building.prestigeLevel * prestigeBonus || 0))).toFixed(1)} per click
+                  </Text>
+                </View>
+              )}
             </View>
           )}
         </View>

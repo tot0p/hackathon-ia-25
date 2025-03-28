@@ -694,5 +694,105 @@
     "conditionValue": 5,
     "conditionText": "Upgraded all buildings to at least level 5",
     "icon": "👑"
+  },
+  {
+    "id": "tree_planting_1",
+    "name": "First Tree",
+    "description": "Plant your first tree",
+    "unlocked": false,
+    "conditionType": "treesPlanted",
+    "conditionValue": 1,
+    "conditionText": "Planted 1 tree",
+    "icon": "🌳"
+  },
+  {
+    "id": "tree_planting_10",
+    "name": "Sapling Grove",
+    "description": "Plant 10 trees",
+    "unlocked": false,
+    "conditionType": "treesPlanted",
+    "conditionValue": 10,
+    "conditionText": "Planted 10 trees",
+    "icon": "🌳"
+  },
+  {
+    "id": "tree_planting_100",
+    "name": "Small Forest",
+    "description": "Plant 100 trees",
+    "unlocked": false,
+    "conditionType": "treesPlanted",
+    "conditionValue": 100,
+    "conditionText": "Planted 100 trees",
+    "icon": "🌳"
+  },
+  {
+    "id": "tree_planting_1000",
+    "name": "Forest Keeper",
+    "description": "Plant 1,000 trees",
+    "unlocked": false,
+    "conditionType": "treesPlanted",
+    "conditionValue": 1000,
+    "conditionText": "Planted 1,000 trees",
+    "icon": "🌲"
+  },
+  {
+    "id": "tree_planting_10000",
+    "name": "Forest Warden",
+    "description": "Plant 10,000 trees",
+    "unlocked": false,
+    "conditionType": "treesPlanted",
+    "conditionValue": 10000,
+    "conditionText": "Planted 10,000 trees",
+    "icon": "🌲"
+  },
+  {
+    "id": "tree_planting_100000",
+    "name": "Forest Guardian",
+    "description": "Plant 100,000 trees",
+    "unlocked": false,
+    "conditionType": "treesPlanted",
+    "conditionValue": 100000,
+    "conditionText": "Planted 100,000 trees",
+    "icon": "🌲"
+  },
+  {
+    "id": "tree_planting_1000000",
+    "name": "Reforestation Champion",
+    "description": "Plant 1,000,000 trees",
+    "unlocked": false,
+    "conditionType": "treesPlanted",
+    "conditionValue": 1000000,
+    "conditionText": "Planted 1,000,000 trees",
+    "icon": "🌱"
+  },
+  {
+    "id": "tree_planting_10000000",
+    "name": "Carbon Sequestration Master",
+    "description": "Plant 10,000,000 trees",
+    "unlocked": false,
+    "conditionType": "treesPlanted",
+    "conditionValue": 10000000,
+    "conditionText": "Planted 10,000,000 trees",
+    "icon": "🌿"
+  },
+  {
+    "id": "tree_planting_100000000",
+    "name": "Ecosystem Restorer",
+    "description": "Plant 100,000,000 trees",
+    "unlocked": false,
+    "conditionType": "treesPlanted",
+    "conditionValue": 100000000,
+    "conditionText": "Planted 100,000,000 trees",
+    "icon": "🌍"
+  },
+  {
+    "id": "tree_planting_1000000000",
+    "name": "Earth's Savior",
+    "description": "Plant 1,000,000,000 trees",
+    "unlocked": false,
+    "conditionType": "treesPlanted",
+    "conditionValue": 1000000000,
+    "conditionText": "Planted 1,000,000,000 trees",
+    "icon": "🌎"
   }
 ]

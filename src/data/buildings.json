@@ -14,15 +14,19 @@
   {
     "id": "tree_plantation",
     "name": "Tree Plantation",
-    "description": "Plant trees and generate 5 eco points per second",
+    "description": "Plant trees that increase click value by 0.5 and generate 2 eco points per second",
     "baseCost": 100,
     "maxLevel": 90,
-    "baseEffect": 5,
-    "type": "passive",
+    "baseEffect": 2,
+    "clickEffect": 0.5,
+    "type": "hybrid",
     "resource": "ecoPoints",
     "unlocked": false,
     "unlockAt": 50,
-    "icon": "🌳"
+    "icon": "🌳",
+    "stats": {
+      "treesPlanted": 0
+    }
   },
   {
     "id": "eco_education",
