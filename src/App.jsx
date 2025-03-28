@@ -100,8 +100,8 @@ const App = () => {
   }, [handleClick]);
 
   // Custom building purchase handler that integrates sound
-  const handleBuildingPurchase = useCallback((buildingId) => {
-    const success = purchaseBuilding(buildingId);
+  const handleBuildingPurchase = useCallback((buildingId, quantity = 1) => {
+    const success = purchaseBuilding(buildingId, quantity);
     if (success) {
       playSound('buy');
     }

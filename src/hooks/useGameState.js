@@ -592,7 +592,7 @@ const useGameState = () => {
   };
 
   // Handle purchasing a building
-  const purchaseBuilding = (buildingId) => {
+  const purchaseBuilding = (buildingId, quantity = 1) => {
     const buildingIndex = gameState.buildings.findIndex(b => b.id === buildingId);
     
     if (buildingIndex === -1) return false;
@@ -602,23 +602,61 @@ const useGameState = () => {
     // Check if we can purchase this building
     if (building.level >= building.maxLevel) return false;
     
-    // Use the updated cost calculation that includes prestige level
-    const cost = calculateBuildingCost(building.baseCost, building.level, building.prestigeLevel);
+    // Calculate how many buildings we can purchase based on quantity
+    let actualQuantity = quantity;
+    let totalCost = 0;
+    let newLevel = building.level;
+    let remainingPoints = gameState.resources.ecoPoints;
+    let effectValue = 0;
     
-    if (gameState.resources.ecoPoints < cost) return false;
+    // Calculate the max buildings we can buy and the total cost
+    if (quantity === "max") {
+      // For "max" mode, we calculate how many buildings we can buy with current points
+      while (newLevel < building.maxLevel && remainingPoints >= calculateBuildingCost(building.baseCost, newLevel, building.prestigeLevel)) {
+        const currentCost = calculateBuildingCost(building.baseCost, newLevel, building.prestigeLevel);
+        totalCost += currentCost;
+        remainingPoints -= currentCost;
+        newLevel++;
+        
+        // Calculate effect for multiplier buildings
+        if (building.type === 'multiplier') {
+          const prestigeBonus = 1 + (building.prestigeLevel * PRESTIGE_BONUS);
+          effectValue += building.baseEffect * prestigeBonus;
+        }
+      }
+      actualQuantity = newLevel - building.level;
+    } else {
+      // For numerical modes (1, 10, 100)
+      const maxPurchase = building.maxLevel - building.level;
+      actualQuantity = Math.min(quantity, maxPurchase);
+      
+      // Calculate total cost for the specified quantity
+      for (let i = 0; i < actualQuantity; i++) {
+        const levelCost = calculateBuildingCost(building.baseCost, building.level + i, building.prestigeLevel);
+        totalCost += levelCost;
+        
+        // Calculate effect for multiplier buildings
+        if (building.type === 'multiplier') {
+          const prestigeBonus = 1 + (building.prestigeLevel * PRESTIGE_BONUS);
+          effectValue += building.baseEffect * prestigeBonus;
+        }
+      }
+    }
+    
+    // Check if we can afford all the buildings
+    if (actualQuantity <= 0 || totalCost > gameState.resources.ecoPoints) {
+      return false;
+    }
     
     const newBuildings = [...gameState.buildings];
     newBuildings[buildingIndex] = {
       ...building,
-      level: building.level + 1,
+      level: building.level + actualQuantity,
     };
     
     // Update multipliers if it's a multiplier building
     let newMultipliers = { ...gameState.multipliers };
     if (building.type === 'multiplier') {
-      const prestigeBonus = 1 + (building.prestigeLevel * PRESTIGE_BONUS);
-      const effectValue = building.baseEffect * prestigeBonus;
-      
       newMultipliers = {
         clickMultiplier: gameState.multipliers.clickMultiplier + effectValue,
         passiveMultiplier: gameState.multipliers.passiveMultiplier + effectValue,
@@ -629,7 +667,7 @@ const useGameState = () => {
       ...prevState,
       resources: {
         ...prevState.resources,
-        ecoPoints: prevState.resources.ecoPoints - cost,
+        ecoPoints: prevState.resources.ecoPoints - totalCost,
       },
       buildings: newBuildings,
       multipliers: newMultipliers,
@@ -769,10 +807,13 @@ const useGameState = () => {
     dismissNotification,
     pointsPerSecond: calculatePointsPerSecond(gameState.buildings, gameState.multipliers),
     clickValue: calculateClickValue(gameState.buildings, gameState.multipliers),
-    getBuildingCost: (buildingId) => {
+    getBuildingCost: (buildingId, specificLevel) => {
       const building = gameState.buildings.find(b => b.id === buildingId);
       if (!building) return null;
-      return calculateBuildingCost(building.baseCost, building.level, building.prestigeLevel);
+      
+      // If a specific level is provided, use that instead of the building's current level
+      const level = specificLevel !== undefined ? specificLevel : building.level;
+      return calculateBuildingCost(building.baseCost, level, building.prestigeLevel);
     },
     checkCanPrestige: (buildingId) => {
       const building = gameState.buildings.find(b => b.id === buildingId);

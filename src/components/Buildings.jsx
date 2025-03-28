@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import carbonTips from '../data/carbonTips.json';
 
@@ -16,7 +16,17 @@ const buildingEcoFactMap = {
   carbon_capture: [66, 38, 47, 60, 70]
 };
 
+const BUY_MODES = {
+  ONE: { value: 1, label: "Buy 1" },
+  TEN: { value: 10, label: "Buy 10" },
+  HUNDRED: { value: 100, label: "Buy 100" },
+  MAX: { value: "max", label: "Buy Max" },
+};
+
 const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCanPrestige, getPrestigeBonus, getBuildingCost }) => {
+  // Add state for buy mode
+  const [buyMode, setBuyMode] = useState(BUY_MODES.ONE);
+
   // Filter buildings to only show unlocked ones, with a null check
   const availableBuildings = buildings && Array.isArray(buildings) 
     ? buildings.filter(building => building.unlocked)
@@ -62,19 +72,80 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
     // Get the eco fact for this building
     const ecoFact = buildingEcoFacts[building.id];
     
+    // Calculate total cost for buying multiple buildings based on current buy mode
+    const calculateTotalCost = () => {
+      if (maxLevel) return "MAX LEVEL";
+      
+      if (buyMode.value === "max") {
+        let totalCost = 0;
+        let currentLevel = building.level;
+        let remainingPoints = ecoPoints;
+        
+        // Calculate how many we can buy and the total cost
+        while (currentLevel < building.maxLevel && remainingPoints >= getBuildingCost(building.id, currentLevel)) {
+          const levelCost = getBuildingCost(building.id, currentLevel);
+          totalCost += levelCost;
+          remainingPoints -= levelCost;
+          currentLevel++;
+        }
+        
+        if (currentLevel === building.level) {
+          return `Can't afford any`;
+        }
+        
+        const quantity = currentLevel - building.level;
+        return `Cost: ${totalCost} for ${quantity}`;
+      } else {
+        // For numerical buy modes (1, 10, 100)
+        const quantity = Math.min(buyMode.value, building.maxLevel - building.level);
+        if (quantity <= 0) return "MAX LEVEL";
+        
+        let totalCost = 0;
+        for (let i = 0; i < quantity; i++) {
+          totalCost += getBuildingCost(building.id, building.level + i);
+        }
+        
+        return `Cost: ${totalCost} for ${quantity}`;
+      }
+    };
+    
+    // Check if we can afford based on buy mode
+    const canAffordBuyMode = () => {
+      if (maxLevel) return false;
+      
+      if (buyMode.value === "max") {
+        // For max, we can afford if we can buy at least one
+        return ecoPoints >= cost;
+      } else {
+        // For numerical modes, calculate total cost for the quantity
+        const quantity = Math.min(buyMode.value, building.maxLevel - building.level);
+        if (quantity <= 0) return false;
+        
+        let totalCost = 0;
+        for (let i = 0; i < quantity; i++) {
+          totalCost += getBuildingCost(building.id, building.level + i);
+        }
+        
+        return ecoPoints >= totalCost;
+      }
+    };
+    
     return (
       <TouchableOpacity
         key={building.id}
-        style={[
-          styles.buildingItem,
+        style={[styles.buildingItem,
           maxLevel ? styles.maxedBuilding : 
-            canAfford ? styles.affordableBuilding : styles.unaffordableBuilding
+            canAffordBuyMode() ? styles.affordableBuilding : styles.unaffordableBuilding
         ]}
         onPress={() => {
-          canPrestige ? prestigeBuilding(building.id) : onPurchase(building.id);
+          if (canPrestige) {
+            prestigeBuilding(building.id);
+          } else {
+            onPurchase(building.id, buyMode.value);
+          }
           trackBuildingInteraction(building.id);
         }}
-        disabled={!canAfford && !canPrestige}
+        disabled={!canAffordBuyMode() && !canPrestige}
       >
         <View style={styles.buildingIcon}>
           <Text style={styles.iconText}>{building.icon}</Text>
@@ -116,12 +187,11 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
             </View>
           ) : (
             <View style={styles.buildingFooter}>
-              <Text style={[
-                styles.costText,
+              <Text style={[styles.costText,
                 maxLevel ? styles.maxedText : 
-                  canAfford ? styles.affordableText : styles.unaffordableText
+                  canAffordBuyMode() ? styles.affordableText : styles.unaffordableText
               ]}>
-                {maxLevel ? 'MAX LEVEL' : `Cost: ${cost} eco points`}
+                {maxLevel ? 'MAX LEVEL' : calculateTotalCost()}
               </Text>
               
               {building.type === 'passive' && (
@@ -162,6 +232,18 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Buildings</Text>
+      
+      <View style={styles.buyModeContainer}>
+        {Object.values(BUY_MODES).map(mode => (
+          <TouchableOpacity
+            key={mode.value}
+            style={[styles.buyModeButton, buyMode.value === mode.value && styles.selectedBuyModeButton]}
+            onPress={() => setBuyMode(mode)}
+          >
+            <Text style={styles.buyModeButtonText}>{mode.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
       
       {availableBuildings.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -337,6 +419,23 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  buyModeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+  },
+  buyModeButton: {
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: '#E0E0E0',
+  },
+  selectedBuyModeButton: {
+    backgroundColor: '#BDBDBD',
+  },
+  buyModeButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
 
