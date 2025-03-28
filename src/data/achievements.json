@@ -10,6 +10,196 @@
     "icon": "👆"
   },
   {
+    "id": "click_10",
+    "name": "Eco Beginner",
+    "description": "Click 10 times for the environment",
+    "unlocked": false,
+    "conditionType": "totalClicks",
+    "conditionValue": 10,
+    "conditionText": "Clicked the Earth 10 times",
+    "icon": "👆"
+  },
+  {
+    "id": "click_100",
+    "name": "Eco Enthusiast",
+    "description": "Click 100 times for the environment",
+    "unlocked": false,
+    "conditionType": "totalClicks",
+    "conditionValue": 100,
+    "conditionText": "Clicked the Earth 100 times",
+    "icon": "👆"
+  },
+  {
+    "id": "click_1000", 
+    "name": "Eco Advocate",
+    "description": "Click 1,000 times for the environment",
+    "unlocked": false,
+    "conditionType": "totalClicks",
+    "conditionValue": 1000,
+    "conditionText": "Clicked the Earth 1,000 times",
+    "icon": "👆"
+  },
+  {
+    "id": "click_10000",
+    "name": "Eco Activist", 
+    "description": "Click 10,000 times for the environment",
+    "unlocked": false,
+    "conditionType": "totalClicks",
+    "conditionValue": 10000,
+    "conditionText": "Clicked the Earth 10,000 times",
+    "icon": "👆"
+  },
+  {
+    "id": "click_100000",
+    "name": "Eco Champion",
+    "description": "Click 100,000 times for the environment",
+    "unlocked": false,
+    "conditionType": "totalClicks",
+    "conditionValue": 100000,
+    "conditionText": "Clicked the Earth 100,000 times",
+    "icon": "👆"
+  },
+  {
+    "id": "click_1000000",
+    "name": "Eco Legend",
+    "description": "Click 1,000,000 times for the environment",
+    "unlocked": false,
+    "conditionType": "totalClicks",
+    "conditionValue": 1000000,
+    "conditionText": "Clicked the Earth 1,000,000 times",
+    "icon": "👆"
+  },
+  {
+    "id": "click_10000000",
+    "name": "Eco Superhero",
+    "description": "Click 10,000,000 times for the environment",
+    "unlocked": false,
+    "conditionType": "totalClicks",
+    "conditionValue": 10000000,
+    "conditionText": "Clicked the Earth 10,000,000 times",
+    "icon": "🦸‍♂️"
+  },
+  {
+    "id": "click_100000000",
+    "name": "Eco Savior",
+    "description": "Click 100,000,000 times for the environment",
+    "unlocked": false,
+    "conditionType": "totalClicks",
+    "conditionValue": 100000000, 
+    "conditionText": "Clicked the Earth 100,000,000 times",
+    "icon": "🌍"
+  },
+  {
+    "id": "click_1000000000",
+    "name": "Earth's Guardian",
+    "description": "Click 1,000,000,000 times for the environment",
+    "unlocked": false,
+    "conditionType": "totalClicks",
+    "conditionValue": 1000000000,
+    "conditionText": "Clicked the Earth 1,000,000,000 times",
+    "icon": "🌎"
+  },
+  {
+    "id": "first_ecoPoint",
+    "name": "Green Beginnings",
+    "description": "Earn your first eco point",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 1,
+    "conditionText": "Earned 1 Eco Point",
+    "icon": "🌱"
+  },
+  {
+    "id": "ecoPoints_10",
+    "name": "Green Novice",
+    "description": "Earn 10 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 10,
+    "conditionText": "Earned 10 Eco Points",
+    "icon": "🌱"
+  },
+  {
+    "id": "ecoPoints_100",
+    "name": "Eco Warrior",
+    "description": "Earn 100 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 100,
+    "conditionText": "Earned 100 Eco Points",
+    "icon": "🌱"
+  },
+  {
+    "id": "ecoPoints_1000",
+    "name": "Environmental Hero",
+    "description": "Earn 1,000 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 1000,
+    "conditionText": "Earned 1,000 Eco Points",
+    "icon": "🦸"
+  },
+  {
+    "id": "ecoPoints_10000",
+    "name": "Green Guardian",
+    "description": "Earn 10,000 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 10000,
+    "conditionText": "Earned 10,000 Eco Points",
+    "icon": "🛡️"
+  },
+  {
+    "id": "ecoPoints_100000",
+    "name": "Eco Visionary",
+    "description": "Earn 100,000 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 100000,
+    "conditionText": "Earned 100,000 Eco Points",
+    "icon": "👁️"
+  },
+  {
+    "id": "ecoPoints_1000000",
+    "name": "Earth's Champion",
+    "description": "Earn 1,000,000 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 1000000,
+    "conditionText": "Earned 1,000,000 Eco Points",
+    "icon": "🏆"
+  },
+  {
+    "id": "ecoPoints_10000000",
+    "name": "Planetary Savior",
+    "description": "Earn 10,000,000 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 10000000,
+    "conditionText": "Earned 10,000,000 Eco Points",
+    "icon": "🌏"
+  },
+  {
+    "id": "ecoPoints_100000000",
+    "name": "Interstellar Conservationist",
+    "description": "Earn 100,000,000 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 100000000,
+    "conditionText": "Earned 100,000,000 Eco Points",
+    "icon": "✨"
+  },
+  {
+    "id": "ecoPoints_1000000000",
+    "name": "Universal Eco Legend",
+    "description": "Earn 1,000,000,000 eco points",
+    "unlocked": false,
+    "conditionType": "totalEcoPoints",
+    "conditionValue": 1000000000,
+    "conditionText": "Earned 1,000,000,000 Eco Points",
+    "icon": "🌌"
+  },
+  {
     "id": "eco_warrior",
     "name": "Eco Warrior",
     "description": "Reach 100 eco points",
@@ -38,6 +228,36 @@
     "conditionValue": 10,
     "conditionText": "Purchased 10 buildings in total",
     "icon": "⬆️"
+  },
+  {
+    "id": "first_building",
+    "name": "Green Infrastructure",
+    "description": "Purchase your first building",
+    "unlocked": false,
+    "conditionType": "totalBuildings",
+    "conditionValue": 1,
+    "conditionText": "Purchased 1 building",
+    "icon": "🏗️"
+  },
+  {
+    "id": "buildings_10",
+    "name": "Eco Developer",
+    "description": "Purchase 10 buildings in total",
+    "unlocked": false,
+    "conditionType": "totalBuildings",
+    "conditionValue": 10,
+    "conditionText": "Purchased 10 buildings in total",
+    "icon": "🏗️"
+  },
+  {
+    "id": "buildings_100",
+    "name": "Green Architect",
+    "description": "Purchase 100 buildings in total",
+    "unlocked": false,
+    "conditionType": "totalBuildings",
+    "conditionValue": 100,
+    "conditionText": "Purchased 100 buildings in total",
+    "icon": "🏗️"
   },
   {
     "id": "prestige_pioneer",
