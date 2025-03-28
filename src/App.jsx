@@ -24,6 +24,9 @@ import useGameState from './hooks/useGameState';
 // Import audio hook
 import useAudio from './hooks/useAudio';
 
+// Import carbon tips for the tip system
+import carbonTips from './data/carbonTips.json';
+
 // Create a simple slider component since Slider is not available in React Native Web
 const CustomSlider = ({ value, minimumValue, maximumValue, onValueChange, disabled, minimumTrackTintColor, maximumTrackTintColor, thumbTintColor }) => {
   return (
@@ -498,7 +501,7 @@ const App = () => {
         formatNumber={formatNumber}
         buildings={gameState.buildings}
       />
-      
+
       <View style={styles.tabBar}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'buildings' && styles.activeTab]}

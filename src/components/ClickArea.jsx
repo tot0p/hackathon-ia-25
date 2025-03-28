@@ -23,16 +23,21 @@ const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumb
     }
   }, [buildings]);
   
-  // Change the tip every 40 seconds
+  // Change the tip every 30 seconds
   useEffect(() => {
     if (isEcoEducationUnlocked) {
       const tipInterval = setInterval(() => {
         setCurrentTipIndex(prevIndex => (prevIndex + 1) % carbonTips.length);
-      }, 40000);
+      }, 30000);
       
       return () => clearInterval(tipInterval);
     }
   }, [isEcoEducationUnlocked]);
+
+  // Function to handle clicking on the tip to change it
+  const handleTipClick = () => {
+    setCurrentTipIndex(prevIndex => (prevIndex + 1) % carbonTips.length);
+  };
 
   const [animations, setAnimations] = useState([]);
   const [nextId, setNextId] = useState(0);
@@ -88,21 +93,24 @@ const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumb
         currentStyles.container,
         isWeb && currentStyles.webContainer
       ]}>
-        {/* Carbon Tips Banner - Only shown when eco_education is unlocked */}
+        {/* Eco Tips Banner - Only shown when eco_education is unlocked */}
         {isEcoEducationUnlocked && (
-          <View style={[
-            currentStyles.bannerContainer,
-            isWeb && currentStyles.webBannerContainer
-          ]}>
+          <TouchableOpacity 
+            onPress={handleTipClick}
+            style={[
+              currentStyles.bannerContainer,
+              isWeb && currentStyles.webBannerContainer
+            ]}
+          >
             <Text style={[
               currentStyles.bannerTitle,
               isWeb && currentStyles.webBannerTitle
-            ]}>💡 Carbon Reduction Tip:</Text>
+            ]}>💡 Eco Tip:</Text>
             <Text style={[
               currentStyles.bannerText,
               isWeb && currentStyles.webBannerText
             ]}>{carbonTips[currentTipIndex].tip}</Text>
-          </View>
+          </TouchableOpacity>
         )}
 
         {/* Prominently displayed eco points at the top */}
