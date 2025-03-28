@@ -72,15 +72,16 @@ const initialState = {
     clickMultiplier: 1,
     passiveMultiplier: 1,
   },
-  buildings: buildingsData.map(building => ({
-    ...building,
+  // Store only essential building data instead of full building objects
+  buildingsState: buildingsData.map(building => ({
+    id: building.id,
     level: 0,
     prestigeLevel: 0,
+    unlocked: building.unlocked || false,
+    stats: building.stats ? { ...building.stats } : {}
   })),
-  achievements: achievementsData.map(achievement => ({
-    ...achievement,
-    unlocked: false,
-  })),
+  // Store only IDs of unlocked achievements instead of full achievement data
+  unlockedAchievements: [],
   notifications: [],
   settings: {
     soundEnabled: true,
@@ -99,6 +100,9 @@ const calculateBuildingCost = (baseCost, level, prestigeLevel) => {
 
 // Calculate the total points per second from passive buildings
 const calculatePointsPerSecond = (buildings, multipliers) => {
+  if (!Array.isArray(buildings)) return 0;
+  if (!multipliers) multipliers = { passiveMultiplier: 1 };
+  
   return buildings
     .filter(building => (building.type === 'passive' || building.type === 'hybrid') && building.level > 0)
     .reduce((sum, building) => {
@@ -111,6 +115,10 @@ const calculatePointsPerSecond = (buildings, multipliers) => {
 // Calculate the click value based on buildings
 const calculateClickValue = (buildings, multipliers) => {
   const baseClick = 1;
+  
+  if (!Array.isArray(buildings)) return baseClick;
+  if (!multipliers) multipliers = { clickMultiplier: 1 };
+  
   const clickBonus = buildings
     .filter(building => (building.type === 'click' || building.type === 'hybrid') && building.level > 0)
     .reduce((sum, building) => {
@@ -124,15 +132,40 @@ const calculateClickValue = (buildings, multipliers) => {
   return (baseClick + clickBonus) * multipliers.clickMultiplier;
 };
 
+// Helper function to merge building state with full building data from JSON
+const mergeFullBuildingData = (buildingsState) => {
+  return buildingsData.map(buildingData => {
+    // Find the saved state for this building
+    const buildingState = buildingsState.find(b => b.id === buildingData.id) || {
+      id: buildingData.id,
+      level: 0,
+      prestigeLevel: 0,
+      unlocked: buildingData.unlocked || false,
+      stats: buildingData.stats ? { ...buildingData.stats } : {}
+    };
+    
+    // Merge the full building data with the saved state
+    return {
+      ...buildingData,
+      level: buildingState.level,
+      prestigeLevel: buildingState.prestigeLevel,
+      unlocked: buildingState.unlocked,
+      stats: buildingState.stats
+    };
+  });
+};
+
 // Check if an achievement should be unlocked
 const checkAchievementCondition = (achievement, gameState) => {
+  const buildings = gameState.buildings || [];
+  
   switch (achievement.conditionType) {
     case 'totalClicks':
       return gameState.stats.totalClicks >= achievement.conditionValue;
     case 'totalEcoPoints':
       return gameState.stats.totalEcoPoints >= achievement.conditionValue;
     case 'totalBuildings':
-      const totalBuildings = gameState.buildings.reduce((sum, building) => sum + building.level, 0);
+      const totalBuildings = buildings.reduce((sum, building) => sum + building.level, 0);
       return totalBuildings >= achievement.conditionValue;
     case 'totalPrestiges':
       return gameState.stats.totalPrestiges >= achievement.conditionValue;
@@ -141,7 +174,7 @@ const checkAchievementCondition = (achievement, gameState) => {
     case 'co2Reduced':
       return gameState.stats.co2Reduced >= achievement.conditionValue;
     case 'buildingLevel':
-      const building = gameState.buildings.find(b => b.id === achievement.conditionBuilding);
+      const building = buildings.find(b => b.id === achievement.conditionBuilding);
       return building && building.level >= achievement.conditionValue;
     case 'buildingInteractions':
       // Check interactions with a specific building
@@ -170,21 +203,68 @@ const useGameState = () => {
         const parsedState = JSON.parse(savedState);
         
         // Add any missing fields from the initial state (for compatibility)
-        const updatedState = deepMerge(initialState, parsedState);
+        const mergedState = deepMerge(initialState, parsedState);
+        
+        // Convert legacy saves that have full building data to the new format
+        if (mergedState.buildings && !mergedState.buildingsState) {
+          // Extract just the dynamic data from buildings
+          mergedState.buildingsState = mergedState.buildings.map(building => ({
+            id: building.id,
+            level: building.level || 0,
+            prestigeLevel: building.prestigeLevel || 0,
+            unlocked: building.unlocked || false,
+            stats: building.stats || {}
+          }));
+          
+          // Delete the old buildings array
+          delete mergedState.buildings;
+        }
+        
+        // Combine building state with full building data
+        const fullState = {
+          ...mergedState,
+          // Merge the minimal building state with full building definitions
+          buildings: mergeFullBuildingData(mergedState.buildingsState || [])
+        };
         
         // Initialize the previous state ref
-        prevStateRef.current = JSON.stringify(updatedState);
+        prevStateRef.current = JSON.stringify({
+          ...fullState,
+          lastSaved: null,
+          lastAutoSave: null
+        });
         
-        return updatedState;
+        return fullState;
       } catch (error) {
         console.error('Failed to parse saved game state:', error);
         // Delete corrupted save data
         localStorage.removeItem('ecoClickerSave');
-        return initialState;
+        
+        // Initialize with default state including full building data
+        const fullState = {
+          ...initialState,
+          buildings: mergeFullBuildingData(initialState.buildingsState)
+        };
+        prevStateRef.current = JSON.stringify({
+          ...fullState,
+          lastSaved: null,
+          lastAutoSave: null
+        });
+        return fullState;
       }
     }
-    prevStateRef.current = JSON.stringify(initialState);
-    return initialState;
+    
+    // Initialize with default state including full building data
+    const fullState = {
+      ...initialState,
+      buildings: mergeFullBuildingData(initialState.buildingsState)
+    };
+    prevStateRef.current = JSON.stringify({
+      ...fullState,
+      lastSaved: null,
+      lastAutoSave: null
+    });
+    return fullState;
   });
 
   // Compare current state with previous state to detect actual changes
@@ -218,32 +298,71 @@ const useGameState = () => {
     const saveGame = () => {
       // Check if we should reset the game first
       if (shouldReset) {
-        // Reset the game state to initial values
-        const emptyState = {
+        // Create a proper initial state with buildings included
+        const fullInitialState = {
+          ...initialState,
+          buildings: mergeFullBuildingData(initialState.buildingsState),
+          lastSaved: new Date().toISOString(),
+          lastAutoSave: new Date().toISOString()
+        };
+        
+        // Create a state for saving that omits the full building data
+        const stateToSave = {
           ...initialState,
           lastSaved: new Date().toISOString(),
           lastAutoSave: new Date().toISOString()
         };
         
-        // Save the empty state
-        localStorage.setItem('ecoClickerSave', JSON.stringify(emptyState));
+        // Save to localStorage
+        localStorage.setItem('ecoClickerSave', JSON.stringify(stateToSave));
         
         // Reset the flag
         setShouldReset(false);
         
-        // Update the current state
-        setGameState(initialState);
+        // Update the current state with buildings included
+        setGameState(fullInitialState);
+        
+        // Reset pending changes flag to prevent further saves after reset
+        hasPendingChanges.current = false;
+        
+        // Reset the previous state reference to match the new initial state
+        prevStateRef.current = JSON.stringify({
+          ...fullInitialState,
+          lastSaved: null,
+          lastAutoSave: null
+        });
+        
+        // Reset the auto-save timer
+        lastAutoSaveTime.current = new Date();
         
         console.log('Game has been reset and saved with default values');
-        return;
+        
+        // Reload the window for a completely fresh state
+        window.location.reload();
       }
       
       // Only save if there are pending changes
       if (hasPendingChanges.current) {
         // Update timestamps
         const now = new Date();
+        
+        // Extract only essential building data for saving
+        const buildingsState = gameState.buildings && Array.isArray(gameState.buildings) ? 
+          gameState.buildings.map(building => ({
+            id: building.id,
+            level: building.level,
+            prestigeLevel: building.prestigeLevel,
+            unlocked: building.unlocked,
+            stats: building.stats || {}
+          })) : 
+          initialState.buildingsState;
+        
+        // Create state object with minimal data for saving
         const stateToSave = {
           ...gameState,
+          // Replace full buildings with minimal buildingsState
+          buildings: undefined, // Remove full building data
+          buildingsState, // Store minimal building data
           lastSaved: now.toISOString(),
           lastAutoSave: now.toISOString()
         };
@@ -419,9 +538,16 @@ const useGameState = () => {
     });
 
     // Check for achievements to unlock
-    newState.achievements = gameState.achievements.map(achievement => {
-      if (!achievement.unlocked && checkAchievementCondition(achievement, gameState)) {
+    // Loop through all achievements in achievementsData
+    for (const achievement of achievementsData) {
+      // Check if the achievement is not already unlocked
+      if (!gameState.unlockedAchievements.includes(achievement.id) && 
+          checkAchievementCondition(achievement, gameState)) {
         hasChanges = true;
+        
+        // Add the achievement ID to the unlocked achievements list
+        newState.unlockedAchievements = [...(newState.unlockedAchievements || []), achievement.id];
+        
         // Add notification for unlocked achievement at the beginning of the array
         newNotifications.unshift({
           id: `achievement-${achievement.id}`,
@@ -431,10 +557,8 @@ const useGameState = () => {
           condition: achievement.conditionText,
           icon: achievement.icon,
         });
-        return { ...achievement, unlocked: true };
       }
-      return achievement;
-    });
+    }
 
     if (hasChanges) {
       setGameState({
@@ -442,7 +566,7 @@ const useGameState = () => {
         notifications: newNotifications,
       });
     }
-  }, [gameState.resources, gameState.stats, gameState.buildings]);
+  }, [gameState.resources, gameState.stats, gameState.buildings, gameState.unlockedAchievements]);
 
   // Handle clicking on the main clicker area
   const handleClick = () => {
@@ -597,20 +721,42 @@ const useGameState = () => {
   // Reset the game
   const resetGame = () => {
     if (window.confirm('Are you sure you want to reset your progress? This cannot be undone.')) {
-      // Reset to initial state
-      setGameState(initialState);
+      // Clear any pending save interval
+      hasPendingChanges.current = false;
       
-      // Immediately save the default values
-      const defaultSave = {
+      // Create a proper initial state with buildings included
+      const fullInitialState = {
+        ...initialState,
+        buildings: mergeFullBuildingData(initialState.buildingsState),
+        lastSaved: new Date().toISOString()
+      };
+      
+      // Reset to initial state with proper building data
+      setGameState(fullInitialState);
+      
+      // Create a state for saving that omits the full building data
+      const stateToSave = {
         ...initialState,
         lastSaved: new Date().toISOString()
       };
       
       // Save the default state to localStorage
-      localStorage.setItem('ecoClickerSave', JSON.stringify(defaultSave));
+      localStorage.setItem('ecoClickerSave', JSON.stringify(stateToSave));
+      
+      // Reset the previous state reference to match the new initial state
+      prevStateRef.current = JSON.stringify({
+        ...fullInitialState,
+        lastSaved: null,
+        lastAutoSave: null
+      });
+      
+      // Reset the auto-save timer
+      lastAutoSaveTime.current = new Date();
       
       console.log('Game reset completed: Default values saved');
       
+      // Reload the window for a completely fresh state
+      window.location.reload();
     }
   };
 

@@ -17,8 +17,10 @@ const buildingEcoFactMap = {
 };
 
 const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCanPrestige, getPrestigeBonus, getBuildingCost }) => {
-  // Filter buildings to only show unlocked ones
-  const availableBuildings = buildings.filter(building => building.unlocked);
+  // Filter buildings to only show unlocked ones, with a null check
+  const availableBuildings = buildings && Array.isArray(buildings) 
+    ? buildings.filter(building => building.unlocked)
+    : [];
 
   // Function to track building interactions
   const trackBuildingInteraction = (buildingId) => {
