@@ -160,7 +160,24 @@ const useGameState = () => {
     const savedState = localStorage.getItem('ecoClickerSave');
     if (savedState) {
       try {
-        return JSON.parse(savedState);
+        const parsedState = JSON.parse(savedState);
+        
+        // Ensure achievement condition functions are properly restored from initialState
+        if (parsedState.achievements) {
+          parsedState.achievements = parsedState.achievements.map(achievement => {
+            const initialAchievement = initialState.achievements.find(a => a.id === achievement.id);
+            if (initialAchievement) {
+              // Keep the unlocked status from saved state but restore the condition function
+              return {
+                ...initialAchievement,
+                unlocked: achievement.unlocked
+              };
+            }
+            return achievement;
+          });
+        }
+        
+        return parsedState;
       } catch (error) {
         console.error('Failed to parse saved game state:', error);
         return initialState;
@@ -246,7 +263,12 @@ const useGameState = () => {
 
     // Check for achievements to unlock
     newState.achievements = gameState.achievements.map(achievement => {
-      if (!achievement.unlocked && achievement.condition(gameState)) {
+      // Find the corresponding achievement in initialState to get the condition function
+      const initialAchievement = initialState.achievements.find(a => a.id === achievement.id);
+      
+      // Use the condition from initialState since the function might have been lost in serialization
+      if (!achievement.unlocked && initialAchievement && initialAchievement.condition && 
+          initialAchievement.condition(gameState)) {
         hasChanges = true;
         return { ...achievement, unlocked: true };
       }

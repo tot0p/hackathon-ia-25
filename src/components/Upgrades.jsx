@@ -45,19 +45,19 @@ const Upgrades = ({ upgrades, ecoPoints, onPurchase, getUpgradeCost }) => {
             
             {upgrade.type === 'passive' && (
               <Text style={styles.effectText}>
-                +{upgrade.baseEffect * (upgrade.level + 1)} points/sec
+                +{(upgrade.baseEffect * (upgrade.level + 1)).toFixed(2)} points/sec
               </Text>
             )}
             
             {upgrade.type === 'click' && (
               <Text style={styles.effectText}>
-                +{upgrade.baseEffect * (upgrade.level + 1)} per click
+                +{(upgrade.baseEffect * (upgrade.level + 1)).toFixed(2)} per click
               </Text>
             )}
             
             {upgrade.type === 'multiplier' && (
               <Text style={styles.effectText}>
-                +{(upgrade.baseEffect * (upgrade.level + 1) * 100).toFixed(0)}% bonus
+                +{(upgrade.baseEffect * (upgrade.level + 1) * 100).toFixed(2)}% bonus
               </Text>
             )}
           </View>

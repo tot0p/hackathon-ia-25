@@ -17,7 +17,7 @@ const Stats = ({ stats, resources, pointsPerSecond, achievements }) => {
         </View>
         
         <View style={styles.statItem}>
-          <Text style={styles.statValue}>{pointsPerSecond.toFixed(1)}</Text>
+          <Text style={styles.statValue}>{pointsPerSecond.toFixed(2)}</Text>
           <Text style={styles.statLabel}>Points/sec</Text>
         </View>
         
@@ -39,7 +39,7 @@ const Stats = ({ stats, resources, pointsPerSecond, achievements }) => {
         <View style={styles.impactItem}>
           <Text style={styles.impactIcon}>🌳</Text>
           <View style={styles.impactTextContainer}>
-            <Text style={styles.impactValue}>{stats.treesPlanted}</Text>
+            <Text style={styles.impactValue}>{stats.treesPlanted.toFixed(2)}</Text>
             <Text style={styles.impactLabel}>Trees Planted</Text>
           </View>
         </View>
@@ -47,7 +47,7 @@ const Stats = ({ stats, resources, pointsPerSecond, achievements }) => {
         <View style={styles.impactItem}>
           <Text style={styles.impactIcon}>💨</Text>
           <View style={styles.impactTextContainer}>
-            <Text style={styles.impactValue}>{stats.co2Reduced.toFixed(1)} kg</Text>
+            <Text style={styles.impactValue}>{stats.co2Reduced.toFixed(2)} kg</Text>
             <Text style={styles.impactLabel}>CO2 Reduced</Text>
           </View>
         </View>
