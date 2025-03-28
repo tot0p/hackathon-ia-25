@@ -71,8 +71,8 @@
     "icon": "☀️"
   },
   {
-    "id": "solar_master",
-    "name": "Solar Master",
+    "id": "solar_advanced",
+    "name": "Solar Advanced",
     "description": "Reach level 25 with Solar Panels",
     "unlocked": false,
     "conditionType": "buildingLevel",
@@ -82,14 +82,36 @@
     "icon": "☀️"
   },
   {
+    "id": "solar_expert",
+    "name": "Solar Expert",
+    "description": "Reach level 50 with Solar Panels",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 50,
+    "conditionBuilding": "solar_panel",
+    "conditionText": "Upgraded Solar Panels to level 50",
+    "icon": "☀️"
+  },
+  {
+    "id": "solar_master",
+    "name": "Solar Master",
+    "description": "Reach level 75 with Solar Panels",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 75,
+    "conditionBuilding": "solar_panel",
+    "conditionText": "Upgraded Solar Panels to level 75",
+    "icon": "☀️"
+  },
+  {
     "id": "solar_champion",
     "name": "Solar Champion",
     "description": "Reach maximum level with Solar Panels",
     "unlocked": false,
     "conditionType": "buildingLevel",
-    "conditionValue": 50,
+    "conditionValue": 100,
     "conditionBuilding": "solar_panel",
-    "conditionText": "Maximized Solar Panels to level 50",
+    "conditionText": "Maximized Solar Panels to level 100",
     "icon": "🔆"
   },
   {
@@ -104,14 +126,47 @@
     "icon": "🌳"
   },
   {
+    "id": "forest_ranger",
+    "name": "Forest Ranger",
+    "description": "Reach level 25 with Tree Plantation",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 25,
+    "conditionBuilding": "tree_plantation",
+    "conditionText": "Upgraded Tree Plantation to level 25",
+    "icon": "🌳"
+  },
+  {
+    "id": "forest_manager",
+    "name": "Forest Manager",
+    "description": "Reach level 50 with Tree Plantation",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 50,
+    "conditionBuilding": "tree_plantation",
+    "conditionText": "Upgraded Tree Plantation to level 50",
+    "icon": "🌳"
+  },
+  {
+    "id": "forest_master",
+    "name": "Forest Master",
+    "description": "Reach level 75 with Tree Plantation",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 75,
+    "conditionBuilding": "tree_plantation",
+    "conditionText": "Upgraded Tree Plantation to level 75",
+    "icon": "🌳"
+  },
+  {
     "id": "forest_guardian",
     "name": "Forest Guardian",
     "description": "Reach maximum level with Tree Plantation",
     "unlocked": false,
     "conditionType": "buildingLevel",
-    "conditionValue": 20,
+    "conditionValue": 90,
     "conditionBuilding": "tree_plantation",
-    "conditionText": "Maximized Tree Plantation to level 20",
+    "conditionText": "Maximized Tree Plantation to level 90",
     "icon": "🌲"
   },
   {
@@ -126,14 +181,47 @@
     "icon": "📚"
   },
   {
+    "id": "eco_teacher",
+    "name": "Eco Teacher",
+    "description": "Reach level 25 with Eco Education",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 25,
+    "conditionBuilding": "eco_education",
+    "conditionText": "Upgraded Eco Education to level 25",
+    "icon": "📚"
+  },
+  {
+    "id": "eco_scholar",
+    "name": "Eco Scholar",
+    "description": "Reach level 50 with Eco Education",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 50,
+    "conditionBuilding": "eco_education",
+    "conditionText": "Upgraded Eco Education to level 50",
+    "icon": "📚"
+  },
+  {
+    "id": "eco_philosopher",
+    "name": "Eco Philosopher",
+    "description": "Reach level 75 with Eco Education",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 75,
+    "conditionBuilding": "eco_education",
+    "conditionText": "Upgraded Eco Education to level 75",
+    "icon": "📚"
+  },
+  {
     "id": "eco_professor",
     "name": "Eco Professor",
     "description": "Reach maximum level with Eco Education",
     "unlocked": false,
     "conditionType": "buildingLevel",
-    "conditionValue": 10,
+    "conditionValue": 80,
     "conditionBuilding": "eco_education",
-    "conditionText": "Maximized Eco Education to level 10",
+    "conditionText": "Maximized Eco Education to level 80",
     "icon": "🎓"
   },
   {
@@ -148,14 +236,36 @@
     "icon": "💩"
   },
   {
+    "id": "waste_collector",
+    "name": "Waste Collector",
+    "description": "Reach level 25 with Poop Recycling Plant",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 25,
+    "conditionBuilding": "poop_recycling",
+    "conditionText": "Upgraded Poop Recycling Plant to level 25",
+    "icon": "💩"
+  },
+  {
+    "id": "waste_recycler",
+    "name": "Waste Recycler",
+    "description": "Reach level 50 with Poop Recycling Plant",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 50,
+    "conditionBuilding": "poop_recycling",
+    "conditionText": "Upgraded Poop Recycling Plant to level 50",
+    "icon": "💩"
+  },
+  {
     "id": "waste_specialist",
     "name": "Waste Specialist",
     "description": "Reach maximum level with Poop Recycling Plant",
     "unlocked": false,
     "conditionType": "buildingLevel",
-    "conditionValue": 15,
+    "conditionValue": 70,
     "conditionBuilding": "poop_recycling",
-    "conditionText": "Maximized Poop Recycling Plant to level 15",
+    "conditionText": "Maximized Poop Recycling Plant to level 70",
     "icon": "♻️"
   },
   {
@@ -170,14 +280,36 @@
     "icon": "💧"
   },
   {
+    "id": "hydro_technician",
+    "name": "Hydro Technician",
+    "description": "Reach level 25 with Hydro Power Station",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 25,
+    "conditionBuilding": "hydro_power",
+    "conditionText": "Upgraded Hydro Power Station to level 25",
+    "icon": "💧"
+  },
+  {
+    "id": "hydro_engineer",
+    "name": "Hydro Engineer",
+    "description": "Reach level 50 with Hydro Power Station",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 50,
+    "conditionBuilding": "hydro_power",
+    "conditionText": "Upgraded Hydro Power Station to level 50",
+    "icon": "💧"
+  },
+  {
     "id": "hydro_master",
     "name": "Hydro Master",
     "description": "Reach maximum level with Hydro Power Station",
     "unlocked": false,
     "conditionType": "buildingLevel",
-    "conditionValue": 12,
+    "conditionValue": 60,
     "conditionBuilding": "hydro_power",
-    "conditionText": "Maximized Hydro Power Station to level 12",
+    "conditionText": "Maximized Hydro Power Station to level 60",
     "icon": "🌊"
   },
   {
@@ -192,14 +324,25 @@
     "icon": "🌱"
   },
   {
+    "id": "garden_keeper",
+    "name": "Garden Keeper",
+    "description": "Reach level 25 with Community Garden",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 25,
+    "conditionBuilding": "community_garden",
+    "conditionText": "Upgraded Community Garden to level 25",
+    "icon": "🌱"
+  },
+  {
     "id": "garden_guru",
     "name": "Garden Guru",
     "description": "Reach maximum level with Community Garden",
     "unlocked": false,
     "conditionType": "buildingLevel",
-    "conditionValue": 10,
+    "conditionValue": 50,
     "conditionBuilding": "community_garden",
-    "conditionText": "Maximized Community Garden to level 10",
+    "conditionText": "Maximized Community Garden to level 50",
     "icon": "🌿"
   },
   {
@@ -214,14 +357,25 @@
     "icon": "🔬"
   },
   {
+    "id": "eco_scientist",
+    "name": "Eco Scientist",
+    "description": "Reach level 25 with Eco Research Lab",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 25,
+    "conditionBuilding": "eco_research_lab",
+    "conditionText": "Upgraded Eco Research Lab to level 25",
+    "icon": "🔬"
+  },
+  {
     "id": "eco_innovator",
     "name": "Eco Innovator",
     "description": "Reach maximum level with Eco Research Lab",
     "unlocked": false,
     "conditionType": "buildingLevel",
-    "conditionValue": 8,
+    "conditionValue": 40,
     "conditionBuilding": "eco_research_lab",
-    "conditionText": "Maximized Eco Research Lab to level 8",
+    "conditionText": "Maximized Eco Research Lab to level 40",
     "icon": "🧪"
   },
   {
@@ -236,14 +390,25 @@
     "icon": "🌋"
   },
   {
+    "id": "geothermal_specialist",
+    "name": "Geothermal Specialist",
+    "description": "Reach level 25 with Geothermal Plant",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 25,
+    "conditionBuilding": "geothermal_plant",
+    "conditionText": "Upgraded Geothermal Plant to level 25",
+    "icon": "🌋"
+  },
+  {
     "id": "geothermal_expert",
     "name": "Geothermal Expert",
     "description": "Reach maximum level with Geothermal Plant",
     "unlocked": false,
     "conditionType": "buildingLevel",
-    "conditionValue": 10,
+    "conditionValue": 30,
     "conditionBuilding": "geothermal_plant",
-    "conditionText": "Maximized Geothermal Plant to level 10",
+    "conditionText": "Maximized Geothermal Plant to level 30",
     "icon": "🔥"
   },
   {
@@ -258,15 +423,26 @@
     "icon": "🌊"
   },
   {
-    "id": "ocean_savior",
-    "name": "Ocean Savior",
-    "description": "Reach maximum level with Ocean Cleanup Initiative",
+    "id": "ocean_guardian",
+    "name": "Ocean Guardian",
+    "description": "Reach level 20 with Ocean Cleanup Initiative",
     "unlocked": false,
     "conditionType": "buildingLevel",
-    "conditionValue": 8,
+    "conditionValue": 20,
     "conditionBuilding": "plastic_ocean_cleaner",
-    "conditionText": "Maximized Ocean Cleanup Initiative to level 8",
+    "conditionText": "Maximized Ocean Cleanup Initiative to level 20",
     "icon": "🐟"
+  },
+  {
+    "id": "carbon_specialist",
+    "name": "Carbon Specialist",
+    "description": "Reach level 5 with Carbon Capture Facility",
+    "unlocked": false,
+    "conditionType": "buildingLevel",
+    "conditionValue": 5,
+    "conditionBuilding": "carbon_capture",
+    "conditionText": "Upgraded Carbon Capture Facility to level 5",
+    "icon": "❄️"
   },
   {
     "id": "climate_hero",
@@ -274,9 +450,9 @@
     "description": "Reach maximum level with Carbon Capture Facility",
     "unlocked": false,
     "conditionType": "buildingLevel",
-    "conditionValue": 5,
+    "conditionValue": 10,
     "conditionBuilding": "carbon_capture",
-    "conditionText": "Maximized Carbon Capture Facility to level 5",
+    "conditionText": "Maximized Carbon Capture Facility to level 10",
     "icon": "❄️"
   },
   {
