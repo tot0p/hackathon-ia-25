@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -32,13 +32,25 @@ const App = () => {
     clickValue,
     getBuildingCost,
     checkCanPrestige,
-    getPrestigeBonus
+    getPrestigeBonus,
+    addCheatPoints
   } = useGameState();
 
   const [activeTab, setActiveTab] = useState('buildings');
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [cheatMenuVisible, setCheatMenuVisible] = useState(false);
   const [pointsToAdd, setPointsToAdd] = useState('1000');
+  
+  // Memoize functions that will be passed to modals to prevent re-renders
+  const handleCloseInfoModal = useCallback(() => setInfoModalVisible(false), []);
+  const handleCloseCheatMenu = useCallback(() => setCheatMenuVisible(false), []);
+  const handleCheatPoints = useCallback(() => {
+    const points = parseInt(pointsToAdd, 10);
+    if (!isNaN(points) && points > 0) {
+      addCheatPoints(points);
+      setCheatMenuVisible(false);
+    }
+  }, [pointsToAdd, addCheatPoints]);
   
   // Function to handle key press for cheat code
   useEffect(() => {
@@ -57,15 +69,15 @@ const App = () => {
   }, []);
 
   // Function to format large numbers with K, M, B suffixes
-  const formatNumber = (num) => {
+  const formatNumber = useCallback((num) => {
     if (num < 1000) return Math.floor(num).toString();
     if (num < 1000000) return (Math.floor(num / 100) / 10).toFixed(1) + 'K';
     if (num < 1000000000) return (Math.floor(num / 100000) / 10).toFixed(1) + 'M';
     return (Math.floor(num / 100000000) / 10).toFixed(1) + 'B';
-  };
+  }, []);
 
   // Notification component
-  const NotificationSystem = () => {
+  const NotificationSystem = useCallback(() => {
     if (gameState.notifications.length === 0) return null;
     
     const renderNotification = ({ item }) => {
@@ -109,9 +121,9 @@ const App = () => {
         />
       </View>
     );
-  };
+  }, [gameState.notifications]);
 
-  const renderTabContent = () => {
+  const renderTabContent = useCallback(() => {
     switch (activeTab) {
       case 'buildings':
         return (
@@ -137,15 +149,17 @@ const App = () => {
       default:
         return <Buildings />;
     }
-  };
+  }, [activeTab, gameState.buildings, gameState.resources.ecoPoints, gameState.stats, 
+      gameState.resources, pointsPerSecond, gameState.achievements, purchaseBuilding, 
+      prestigeBuilding, checkCanPrestige, getPrestigeBonus, getBuildingCost]);
 
-  // Memoize the modal components to prevent unnecessary re-renders
-  const InfoModalMemo = memo(({ visible, setVisible }) => (
+  // Completely memoize the modal components to prevent re-renders
+  const InfoModal = useMemo(() => (
     <Modal
       animationType="none"
       transparent={true}
-      visible={visible}
-      onRequestClose={() => setVisible(false)}
+      visible={infoModalVisible}
+      onRequestClose={handleCloseInfoModal}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
@@ -196,22 +210,22 @@ const App = () => {
           
           <TouchableOpacity
             style={styles.closeButton}
-            onPress={() => setVisible(false)}
+            onPress={handleCloseInfoModal}
           >
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
-  ));
+  ), [infoModalVisible, handleCloseInfoModal]);
 
-  // Memoize the cheat menu to prevent unnecessary re-renders
-  const CheatMenuMemo = memo(({ visible, setVisible, pointsToAdd, setPointsToAdd, addCheatPoints }) => (
+  // Memoize the cheat menu
+  const CheatMenu = useMemo(() => (
     <Modal
       animationType="none"
       transparent={true}
-      visible={visible}
-      onRequestClose={() => setVisible(false)}
+      visible={cheatMenuVisible}
+      onRequestClose={handleCloseCheatMenu}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
@@ -230,20 +244,14 @@ const App = () => {
           <View style={styles.cheatButtonsRow}>
             <TouchableOpacity
               style={styles.cheatButton}
-              onPress={() => {
-                const points = parseInt(pointsToAdd, 10);
-                if (!isNaN(points) && points > 0) {
-                  addCheatPoints(points);
-                  setVisible(false);
-                }
-              }}
+              onPress={handleCheatPoints}
             >
               <Text style={styles.cheatButtonText}>Add Points</Text>
             </TouchableOpacity>
             
             <TouchableOpacity
               style={[styles.cheatButton, styles.cancelButton]}
-              onPress={() => setVisible(false)}
+              onPress={handleCloseCheatMenu}
             >
               <Text style={styles.cheatButtonText}>Close</Text>
             </TouchableOpacity>
@@ -251,7 +259,7 @@ const App = () => {
         </View>
       </View>
     </Modal>
-  ));
+  ), [cheatMenuVisible, handleCloseCheatMenu, pointsToAdd, handleCheatPoints]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -301,14 +309,8 @@ const App = () => {
         </TouchableOpacity>
       </View>
       
-      <InfoModalMemo visible={infoModalVisible} setVisible={setInfoModalVisible} />
-      <CheatMenuMemo 
-        visible={cheatMenuVisible} 
-        setVisible={setCheatMenuVisible} 
-        pointsToAdd={pointsToAdd} 
-        setPointsToAdd={setPointsToAdd} 
-        addCheatPoints={gameState.addCheatPoints} 
-      />
+      {InfoModal}
+      {CheatMenu}
     </SafeAreaView>
   );
 };
@@ -394,7 +396,7 @@ const styles = StyleSheet.create({
     zIndex: 1200, // Even higher z-index
   },
   notificationsContainer: {
-    position: 'absolute',
+    position: 'fixed',
     top: 70, // Position below the header
     right: 10, // Changed from left to right
     zIndex: 1000, // Ensure it's above everything else
