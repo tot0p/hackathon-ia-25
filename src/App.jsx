@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   Modal,
   Animated,
-  FlatList
+  FlatList,
+  TextInput
 } from 'react-native';
 
 // Import components
@@ -36,6 +37,24 @@ const App = () => {
 
   const [activeTab, setActiveTab] = useState('buildings');
   const [infoModalVisible, setInfoModalVisible] = useState(false);
+  const [cheatMenuVisible, setCheatMenuVisible] = useState(false);
+  const [pointsToAdd, setPointsToAdd] = useState('1000');
+  
+  // Function to handle key press for cheat code
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      // Check if the pressed key is '²' (keyCode 178)
+      if (event.key === '²') {
+        setCheatMenuVisible(true);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   // Function to format large numbers with K, M, B suffixes
   const formatNumber = (num) => {
@@ -186,6 +205,48 @@ const App = () => {
     </Modal>
   );
 
+  // Cheat menu modal
+  const CheatMenu = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={cheatMenuVisible}
+      onRequestClose={() => setCheatMenuVisible(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Cheat Menu</Text>
+          
+          <View style={styles.cheatOption}>
+            <Text style={styles.cheatLabel}>Add EcoPoints:</Text>
+            <TextInput
+              style={styles.cheatInput}
+              value={pointsToAdd}
+              onChangeText={setPointsToAdd}
+              keyboardType="numeric"
+            />
+          </View>
+          
+          <View style={styles.cheatButtonsRow}>
+            <TouchableOpacity
+              style={styles.cheatButton}
+              onPress={() => gameState.addCheatPoints(parseInt(pointsToAdd, 10))}
+            >
+              <Text style={styles.cheatButtonText}>Add Points</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={[styles.cheatButton, styles.cancelButton]}
+              onPress={() => setCheatMenuVisible(false)}
+            >
+              <Text style={styles.cheatButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#E8F5E9" />
@@ -205,6 +266,7 @@ const App = () => {
         ecoPoints={gameState.resources.ecoPoints}
         pointsPerSecond={pointsPerSecond}
         formatNumber={formatNumber}
+        buildings={gameState.buildings}
       />
       
       <View style={styles.tabBar}>
@@ -234,6 +296,7 @@ const App = () => {
       </View>
       
       <InfoModal />
+      <CheatMenu />
     </SafeAreaView>
   );
 };
@@ -414,6 +477,43 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontStyle: 'italic',
     marginTop: 2,
+  },
+  cheatOption: {
+    marginBottom: 15,
+    width: '100%',
+  },
+  cheatLabel: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 5,
+  },
+  cheatInput: {
+    borderWidth: 1,
+    borderColor: '#CCC',
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 16,
+    width: '100%',
+  },
+  cheatButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  cheatButton: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  cheatButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  cancelButton: {
+    backgroundColor: '#F44336',
   },
 });
 

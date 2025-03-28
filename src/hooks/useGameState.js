@@ -393,10 +393,31 @@ const useGameState = () => {
     return true;
   };
 
+  // Function to add cheat points
+  const addCheatPoints = () => {
+    const points = parseInt(pointsToAdd, 10);
+    if (!isNaN(points) && points > 0) {
+      setGameState(prevState => ({
+        ...prevState,
+        resources: {
+          ...prevState.resources,
+          ecoPoints: prevState.resources.ecoPoints + points,
+        },
+        stats: {
+          ...prevState.stats,
+          totalEcoPoints: prevState.stats.totalEcoPoints + points,
+        },
+      }));
+      setCheatMenuVisible(false);
+    }
+  };
+
   // Reset the game
   const resetGame = () => {
     if (window.confirm('Are you sure you want to reset your progress? This cannot be undone.')) {
+      // Clear all game data from localStorage
       localStorage.removeItem('ecoClickerSave');
+      // Reset to initial state
       setGameState(initialState);
     }
   };
@@ -422,7 +443,8 @@ const useGameState = () => {
     getPrestigeBonus: (buildingId) => {
       // Return the hardcoded prestige bonus value instead of reading from building object
       return PRESTIGE_BONUS;
-    }
+    },
+    addCheatPoints,
   };
 };
 

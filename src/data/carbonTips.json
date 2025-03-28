@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "tip": "Unplug electronic devices when not in use to prevent phantom energy consumption."
+  },
+  {
+    "id": 2,
+    "tip": "Use LED light bulbs to reduce energy consumption by up to 80% compared to traditional bulbs."
+  },
+  {
+    "id": 3,
+    "tip": "Take shorter showers to conserve water and reduce energy used for heating."
+  },
+  {
+    "id": 4,
+    "tip": "Choose reusable bags instead of plastic when shopping to reduce plastic waste."
+  },
+  {
+    "id": 5,
+    "tip": "Walk, bike, or use public transportation instead of driving whenever possible."
+  },
+  {
+    "id": 6,
+    "tip": "Eat less meat to reduce your carbon footprint; meat production generates significant greenhouse gases."
+  },
+  {
+    "id": 7, 
+    "tip": "Buy local and seasonal foods to reduce transportation emissions."
+  },
+  {
+    "id": 8,
+    "tip": "Plant trees in your community to absorb CO2 and provide shade that reduces cooling needs."
+  },
+  {
+    "id": 9,
+    "tip": "Set your thermostat a few degrees lower in winter and higher in summer to save energy."
+  },
+  {
+    "id": 10,
+    "tip": "Use cold water for laundry to save on water heating energy."
+  },
+  {
+    "id": 11,
+    "tip": "Compost food scraps to reduce methane emissions from landfills."
+  },
+  {
+    "id": 12,
+    "tip": "Fix leaky faucets promptly to save water and the energy used to heat it."
+  },
+  {
+    "id": 13,
+    "tip": "Install a programmable thermostat to automatically adjust temperature when you're away or sleeping."
+  },
+  {
+    "id": 14,
+    "tip": "Reduce, reuse, recycle - in that order of priority."
+  },
+  {
+    "id": 15,
+    "tip": "Consider installing solar panels to generate renewable energy for your home."
+  }
+]

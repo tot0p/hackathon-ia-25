@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Platform, Dimensions } from 'react-native';
+import carbonTips from '../data/carbonTips.json';
 
-const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumber }) => {
+const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumber, buildings }) => {
   // Check if we're running on web
   const isWeb = Platform.OS === 'web';
   // Get screen dimensions to calculate responsive sizes
@@ -9,6 +10,29 @@ const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumb
 
   // Use the styles function with isWeb parameter
   const currentStyles = styles(isWeb);
+  
+  // State for the advertising banner
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [isEcoEducationUnlocked, setIsEcoEducationUnlocked] = useState(false);
+  
+  // Check if eco_education is unlocked
+  useEffect(() => {
+    if (buildings) {
+      const ecoEducation = buildings.find(building => building.id === 'eco_education');
+      setIsEcoEducationUnlocked(ecoEducation && ecoEducation.unlocked);
+    }
+  }, [buildings]);
+  
+  // Change the tip every 40 seconds
+  useEffect(() => {
+    if (isEcoEducationUnlocked) {
+      const tipInterval = setInterval(() => {
+        setCurrentTipIndex(prevIndex => (prevIndex + 1) % carbonTips.length);
+      }, 40000);
+      
+      return () => clearInterval(tipInterval);
+    }
+  }, [isEcoEducationUnlocked]);
 
   const [animations, setAnimations] = useState([]);
   const [nextId, setNextId] = useState(0);
@@ -27,7 +51,7 @@ const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumb
       },
       opacity: new Animated.Value(1),
       translateY: new Animated.Value(0),
-      value: `+${clickValue}`,
+      value: `+${Number(clickValue).toFixed(2)}`, // Format to 2 decimal places
     };
 
     setNextId(nextId + 1);
@@ -56,6 +80,23 @@ const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumb
       currentStyles.container,
       isWeb && currentStyles.webContainer
     ]}>
+      {/* Carbon Tips Banner - Only shown when eco_education is unlocked */}
+      {isEcoEducationUnlocked && (
+        <View style={[
+          currentStyles.bannerContainer,
+          isWeb && currentStyles.webBannerContainer
+        ]}>
+          <Text style={[
+            currentStyles.bannerTitle,
+            isWeb && currentStyles.webBannerTitle
+          ]}>💡 Carbon Reduction Tip:</Text>
+          <Text style={[
+            currentStyles.bannerText,
+            isWeb && currentStyles.webBannerText
+          ]}>{carbonTips[currentTipIndex].tip}</Text>
+        </View>
+      )}
+
       {/* Prominently displayed eco points at the top */}
       <View style={[
         currentStyles.pointsDisplay,
@@ -128,12 +169,6 @@ const ClickArea = ({ onPress, clickValue, ecoPoints, pointsPerSecond, formatNumb
           isWeb && currentStyles.webPointsPerSecondLabel
         ]}>points per second</Text>
       </View>
-
-      {/* Click value indicator */}
-      <Text style={[
-        currentStyles.valueText,
-        isWeb && currentStyles.webValueText
-      ]}>+{clickValue} eco points per click</Text>
     </View>
   );
 };
@@ -149,7 +184,8 @@ const styles = (isWeb) => {
       padding: 20,
       paddingTop: 30, // Increased top padding to create more space from header
       position: 'relative',
-      height: 340, // Slightly increased height to accommodate bigger elements
+      height: 'auto', // Changed to auto to accommodate the banner
+      minHeight: 340, // Minimum height
       backgroundColor: '#E8F5E9',
       borderRadius: 15,
       marginVertical: 15, // Increased vertical margin
@@ -161,6 +197,40 @@ const styles = (isWeb) => {
       height: 'auto',
       minHeight: 340,
       marginHorizontal: 'auto',
+    },
+    // New styles for the banner
+    bannerContainer: {
+      width: '100%',
+      backgroundColor: '#2196F3',
+      padding: 10,
+      borderRadius: 10,
+      marginBottom: 15,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 3,
+      elevation: 4,
+    },
+    webBannerContainer: {
+      width: '100%',
+      maxWidth: 550,
+    },
+    bannerTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: 'white',
+      marginBottom: 5,
+    },
+    webBannerTitle: {
+      fontSize: 16 * webScale,
+    },
+    bannerText: {
+      fontSize: 14,
+      color: 'white',
+      textAlign: 'center',
+    },
+    webBannerText: {
+      fontSize: 14 * webScale,
     },
     pointsDisplay: {
       alignItems: 'center',
