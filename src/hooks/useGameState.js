@@ -18,6 +18,7 @@ const initialState = {
     treesPlanted: 0,
     co2Reduced: 0,
     totalPrestiges: 0,
+    buildingInteractions: {} // Track interactions for each building
   },
   multipliers: {
     clickMultiplier: 1,
@@ -94,6 +95,10 @@ const checkAchievementCondition = (achievement, gameState) => {
     case 'buildingLevel':
       const building = gameState.buildings.find(b => b.id === achievement.conditionBuilding);
       return building && building.level >= achievement.conditionValue;
+    case 'buildingInteractions':
+      // Check interactions with a specific building
+      const interactions = gameState.stats.buildingInteractions[achievement.conditionBuilding] || 0;
+      return interactions >= achievement.conditionValue;
     default:
       return false;
   }
@@ -308,6 +313,37 @@ const useGameState = () => {
       return () => clearTimeout(timer);
     }
   }, [gameState.notifications]);
+
+  // Listen for building interactions
+  useEffect(() => {
+    const handleBuildingInteraction = (event) => {
+      const { buildingId } = event.detail;
+      
+      // Update interactions count for this specific building
+      setGameState(prevState => {
+        const buildingInteractions = {
+          ...prevState.stats.buildingInteractions,
+          [buildingId]: (prevState.stats.buildingInteractions[buildingId] || 0) + 1
+        };
+        
+        return {
+          ...prevState,
+          stats: {
+            ...prevState.stats,
+            buildingInteractions
+          }
+        };
+      });
+    };
+
+    // Add event listener
+    document.addEventListener('buildingInteraction', handleBuildingInteraction);
+    
+    // Clean up
+    return () => {
+      document.removeEventListener('buildingInteraction', handleBuildingInteraction);
+    };
+  }, []);
 
   // Check for newly unlocked buildings and achievements
   useEffect(() => {

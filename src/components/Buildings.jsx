@@ -20,6 +20,15 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
   // Filter buildings to only show unlocked ones
   const availableBuildings = buildings.filter(building => building.unlocked);
 
+  // Function to track building interactions
+  const trackBuildingInteraction = (buildingId) => {
+    // Create a custom event for building interactions
+    const event = new CustomEvent('buildingInteraction', { 
+      detail: { buildingId } 
+    });
+    document.dispatchEvent(event);
+  };
+
   // Get a random eco fact for the given building
   const getRandomEcoFact = (buildingId) => {
     if (!buildingEcoFactMap[buildingId]) return null;
@@ -59,7 +68,10 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
           maxLevel ? styles.maxedBuilding : 
             canAfford ? styles.affordableBuilding : styles.unaffordableBuilding
         ]}
-        onPress={() => canPrestige ? prestigeBuilding(building.id) : onPurchase(building.id)}
+        onPress={() => {
+          canPrestige ? prestigeBuilding(building.id) : onPurchase(building.id);
+          trackBuildingInteraction(building.id);
+        }}
         disabled={!canAfford && !canPrestige}
       >
         <View style={styles.buildingIcon}>

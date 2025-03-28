@@ -457,6 +457,50 @@
     "icon": "💩"
   },
   {
+    "id": "poop_lover_1",
+    "name": "Poop Curious",
+    "description": "Interact with the Poop Recycling Plant 1 time",
+    "unlocked": false,
+    "conditionType": "buildingInteractions",
+    "conditionValue": 1,
+    "conditionBuilding": "poop_recycling",
+    "conditionText": "Clicked the Poop Recycling Plant 1 time",
+    "icon": "💩"
+  },
+  {
+    "id": "poop_lover_10",
+    "name": "Poop Enthusiast",
+    "description": "Interact with the Poop Recycling Plant 10 times",
+    "unlocked": false,
+    "conditionType": "buildingInteractions",
+    "conditionValue": 10,
+    "conditionBuilding": "poop_recycling",
+    "conditionText": "Clicked the Poop Recycling Plant 10 times",
+    "icon": "💩"
+  },
+  {
+    "id": "poop_lover_100",
+    "name": "Poop Aficionado",
+    "description": "Interact with the Poop Recycling Plant 100 times",
+    "unlocked": false,
+    "conditionType": "buildingInteractions",
+    "conditionValue": 100,
+    "conditionBuilding": "poop_recycling",
+    "conditionText": "Clicked the Poop Recycling Plant 100 times",
+    "icon": "💩"
+  },
+  {
+    "id": "poop_lover_1000",
+    "name": "Poop Expert",
+    "description": "Interact with the Poop Recycling Plant 1,000 times",
+    "unlocked": false,
+    "conditionType": "buildingInteractions",
+    "conditionValue": 1000,
+    "conditionBuilding": "poop_recycling",
+    "conditionText": "Clicked the Poop Recycling Plant 1,000 times",
+    "icon": "💩"
+  },
+  {
     "id": "waste_recycler",
     "name": "Waste Recycler",
     "description": "Reach level 50 with Poop Recycling Plant",
