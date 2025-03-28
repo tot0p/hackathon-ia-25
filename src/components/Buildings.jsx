@@ -1,9 +1,42 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import carbonTips from '../data/carbonTips.json';
+
+// Building to eco fact mapping - match relevant facts to each building type
+const buildingEcoFactMap = {
+  solar_panel: [15, 53, 58, 68, 72],
+  tree_plantation: [8, 43, 54, 79, 83],
+  eco_education: [98, 99, 100, 29, 14],
+  poop_recycling: [11, 96, 26, 61, 65],
+  hydro_power: [3, 12, 18, 34, 90],
+  community_garden: [22, 73, 7, 46, 85],
+  eco_research_lab: [23, 29, 57, 65, 92],
+  geothermal_plant: [9, 13, 21, 52, 70],
+  plastic_ocean_cleaner: [4, 16, 28, 36, 95],
+  carbon_capture: [66, 38, 47, 60, 70]
+};
 
 const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCanPrestige, getPrestigeBonus, getBuildingCost }) => {
   // Filter buildings to only show unlocked ones
   const availableBuildings = buildings.filter(building => building.unlocked);
+
+  // Get a random eco fact for the given building
+  const getRandomEcoFact = (buildingId) => {
+    if (!buildingEcoFactMap[buildingId]) return null;
+    
+    const factIds = buildingEcoFactMap[buildingId];
+    const randomFactId = factIds[Math.floor(Math.random() * factIds.length)];
+    return carbonTips.find(tip => tip.id === randomFactId);
+  };
+
+  // Memoize eco facts to keep them stable during render cycles
+  const buildingEcoFacts = useMemo(() => {
+    const facts = {};
+    availableBuildings.forEach(building => {
+      facts[building.id] = getRandomEcoFact(building.id);
+    });
+    return facts;
+  }, [availableBuildings.map(b => b.id).join(',')]);
 
   // Render a single building item
   const renderBuildingItem = (building) => {
@@ -15,6 +48,8 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
     // Use getPrestigeBonus function to get the consistent 10% value
     const prestigeBonus = getPrestigeBonus(building.id);
     const currentPrestigeBonus = building.prestigeLevel > 0 ? (building.prestigeLevel * prestigeBonus * 100).toFixed(0) : 0;
+    // Get the eco fact for this building
+    const ecoFact = buildingEcoFacts[building.id];
     
     return (
       <TouchableOpacity
@@ -41,6 +76,13 @@ const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCa
           </View>
           
           <Text style={styles.buildingDescription}>{building.description}</Text>
+          
+          {/* Display eco fact if available */}
+          {ecoFact && (
+            <Text style={styles.ecoFactText}>
+              Eco Fact: {ecoFact.tip}
+            </Text>
+          )}
           
           {building.prestigeLevel > 0 && (
             <Text style={styles.prestigeBonus}>Current prestige bonus: +{currentPrestigeBonus}%</Text>
@@ -205,6 +247,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#33691E',
     marginBottom: 6,
+  },
+  ecoFactText: {
+    fontSize: 12,
+    color: '#1B5E20',
+    fontStyle: 'italic',
+    marginBottom: 6,
+    backgroundColor: '#E8F5E9',
+    borderRadius: 4,
+    padding: 5,
+    borderLeftWidth: 3,
+    borderLeftColor: '#4CAF50',
   },
   prestigeBonus: {
     fontSize: 12,
