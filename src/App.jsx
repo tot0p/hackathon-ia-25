@@ -103,6 +103,7 @@ const App = () => {
             prestigeBuilding={prestigeBuilding}
             checkCanPrestige={checkCanPrestige}
             getPrestigeBonus={getPrestigeBonus}
+            getBuildingCost={getBuildingCost}
           />
         );
       case 'stats':
@@ -364,10 +365,11 @@ const styles = StyleSheet.create({
   notificationsContainer: {
     position: 'absolute',
     top: 70, // Position below the header
-    left: 10,
+    right: 10, // Changed from left to right
     zIndex: 1000, // Ensure it's above everything else
     maxWidth: '80%',
     maxHeight: 150,
+    position: 'fixed', // Add fixed position to keep it visible when scrolling
   },
   notificationsList: {
     // No horizontal padding needed since we have left margin

@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCanPrestige, getPrestigeBonus }) => {
+const Buildings = ({ buildings, ecoPoints, onPurchase, prestigeBuilding, checkCanPrestige, getPrestigeBonus, getBuildingCost }) => {
   // Filter buildings to only show unlocked ones
   const availableBuildings = buildings.filter(building => building.unlocked);
 
   // Render a single building item
   const renderBuildingItem = (building) => {
-    const cost = Math.floor(building.baseCost * Math.pow(1.15, building.level));
+    // Use the getBuildingCost function provided via props
+    const cost = getBuildingCost(building.id);
     const canAfford = ecoPoints >= cost;
     const maxLevel = building.level >= building.maxLevel;
     const canPrestige = checkCanPrestige && checkCanPrestige(building.id);

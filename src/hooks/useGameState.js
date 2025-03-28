@@ -299,6 +299,7 @@ const useGameState = () => {
     // Check if we can purchase this building
     if (building.level >= building.maxLevel) return false;
     
+    // Use the updated cost calculation that includes prestige level
     const cost = calculateBuildingCost(building.baseCost, building.level, building.prestigeLevel);
     
     if (gameState.resources.ecoPoints < cost) return false;
