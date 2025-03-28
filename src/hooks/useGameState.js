@@ -5,6 +5,54 @@ import achievementsData from '../data/achievements.json';
 // Define the hardcoded prestige bonus value for all buildings
 const PRESTIGE_BONUS = 0.1; // 10% bonus per prestige level
 
+// Helper function to safely merge saved data with default structure
+const deepMerge = (defaultObj, savedObj) => {
+  // If saved object doesn't exist, use default
+  if (!savedObj) return defaultObj;
+  
+  const result = { ...defaultObj };
+  
+  // Iterate through properties of default object
+  Object.keys(defaultObj).forEach(key => {
+    // If saved object has this key
+    if (key in savedObj) {
+      // Handle arrays specially (like buildings and achievements)
+      if (Array.isArray(defaultObj[key])) {
+        // If we have default array items with IDs, merge them individually by ID
+        if (defaultObj[key].length > 0 && defaultObj[key][0] && 'id' in defaultObj[key][0]) {
+          result[key] = defaultObj[key].map(defaultItem => {
+            // Try to find corresponding saved item by id
+            const savedItem = savedObj[key].find(item => item.id === defaultItem.id);
+            // If found, merge them, otherwise use default
+            return savedItem ? { ...defaultItem, ...savedItem } : defaultItem;
+          });
+          
+          // Add any saved items that don't exist in default (for backward compatibility)
+          const defaultIds = result[key].map(item => item.id);
+          const newItems = savedObj[key]
+            .filter(item => item.id && !defaultIds.includes(item.id));
+          
+          result[key] = [...result[key], ...newItems];
+        } else {
+          // For regular arrays without IDs, use saved array if it exists
+          result[key] = savedObj[key];
+        }
+      } 
+      // Handle nested objects with recursive merge
+      else if (typeof defaultObj[key] === 'object' && defaultObj[key] !== null) {
+        result[key] = deepMerge(defaultObj[key], savedObj[key]);
+      } 
+      // For primitive values, use the saved value
+      else {
+        result[key] = savedObj[key];
+      }
+    }
+    // If key doesn't exist in saved object, default value remains
+  });
+  
+  return result;
+};
+
 // Define the initial game state
 const initialState = {
   resources: {
@@ -111,6 +159,8 @@ const useGameState = () => {
   const hasPendingChanges = useRef(false);
   // Add ref for tracking when the last auto-save happened
   const lastAutoSaveTime = useRef(new Date());
+  // Add ref for storing the previous state to compare for changes
+  const prevStateRef = useRef(null);
   
   const [gameState, setGameState] = useState(() => {
     // Try to load the game state from localStorage
@@ -120,38 +170,10 @@ const useGameState = () => {
         const parsedState = JSON.parse(savedState);
         
         // Add any missing fields from the initial state (for compatibility)
-        const updatedState = {
-          ...initialState,
-          ...parsedState,
-          stats: {
-            ...initialState.stats,
-            ...parsedState.stats,
-            totalPrestiges: parsedState.stats.totalPrestiges || 0,
-          },
-          buildings: initialState.buildings.map(initialBuilding => {
-            const savedBuilding = parsedState.buildings.find(b => b.id === initialBuilding.id);
-            if (savedBuilding) {
-              return {
-                ...initialBuilding,
-                level: savedBuilding.level || 0,
-                unlocked: savedBuilding.unlocked !== undefined ? savedBuilding.unlocked : initialBuilding.unlocked,
-                prestigeLevel: savedBuilding.prestigeLevel || 0,
-              };
-            }
-            return initialBuilding;
-          }),
-          achievements: initialState.achievements.map(initialAchievement => {
-            const savedAchievement = parsedState.achievements.find(a => a.id === initialAchievement.id);
-            if (savedAchievement) {
-              return {
-                ...initialAchievement,
-                unlocked: savedAchievement.unlocked || false,
-              };
-            }
-            return initialAchievement;
-          }),
-          notifications: [], // Always start with empty notifications
-        };
+        const updatedState = deepMerge(initialState, parsedState);
+        
+        // Initialize the previous state ref
+        prevStateRef.current = JSON.stringify(updatedState);
         
         return updatedState;
       } catch (error) {
@@ -161,13 +183,36 @@ const useGameState = () => {
         return initialState;
       }
     }
+    prevStateRef.current = JSON.stringify(initialState);
     return initialState;
   });
 
+  // Compare current state with previous state to detect actual changes
+  const hasStateChanged = useCallback((currentState) => {
+    // Skip timestamp fields in comparison
+    const stateForComparison = { 
+      ...currentState,
+      lastSaved: null,
+      lastAutoSave: null 
+    };
+    
+    const currentStateStr = JSON.stringify(stateForComparison);
+    const hasChanged = currentStateStr !== prevStateRef.current;
+    
+    if (hasChanged) {
+      // Update the reference for future comparisons
+      prevStateRef.current = currentStateStr;
+    }
+    
+    return hasChanged;
+  }, []);
+
   // Save game state to localStorage whenever it changes
   useEffect(() => {
-    // Mark that changes are pending whenever the game state changes
-    hasPendingChanges.current = true;
+    // Only mark changes as pending if actual game state has changed
+    if (hasStateChanged(gameState)) {
+      hasPendingChanges.current = true;
+    }
     
     // Auto-save function
     const saveGame = () => {
@@ -212,12 +257,17 @@ const useGameState = () => {
         // Update the last auto-save time
         lastAutoSaveTime.current = now;
         
-        // Update game state with the new timestamps
-        setGameState(prevState => ({
-          ...prevState,
-          lastSaved: now.toISOString(),
-          lastAutoSave: now.toISOString()
-        }));
+        // Update game state with the new timestamps without triggering another save
+        setGameState(prevState => {
+          const newState = {
+            ...prevState,
+            lastSaved: now.toISOString(),
+            lastAutoSave: now.toISOString()
+          };
+          // We've already saved this state, so update prevStateRef to avoid detecting this as a change
+          prevStateRef.current = JSON.stringify({...newState, lastSaved: null, lastAutoSave: null});
+          return newState;
+        });
       }
     };
 
