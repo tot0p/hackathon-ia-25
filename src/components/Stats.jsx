@@ -41,7 +41,7 @@ const Stats = ({ gameState }) => {
           <View style={styles.statsGridContainer}>
             <View style={styles.statsGridItem}>
               <Text style={styles.statIcon}>🌱</Text>
-              <Text style={styles.statTitle}>Eco Points</Text>
+              <Text style={styles.statTitle}>Eco Points Earned</Text>
               <Text style={styles.statValue}>{formatNumber(stats.totalEcoPoints)}</Text>
             </View>
             
@@ -100,93 +100,6 @@ const Stats = ({ gameState }) => {
         </View>
       </View>
 
-      {/* Environmental Impact */}
-      <View style={styles.sectionContainer}>
-        <View style={styles.sectionTitleContainer}>
-          <Text style={styles.sectionTitleIcon}>🌿</Text>
-          <Text style={styles.sectionTitle}>Environmental Impact</Text>
-        </View>
-        
-        <View style={styles.statsCard}>
-          <View style={styles.impactItem}>
-            <View style={styles.impactIconContainer}>
-              <Text style={styles.impactIcon}>🌳</Text>
-            </View>
-            <View style={styles.impactContent}>
-              <Text style={styles.impactTitle}>{formatNumber(stats.treesPlanted)} Trees Planted</Text>
-              <Text style={styles.impactDescription}>
-                Equivalent to cleaning air for {formatNumber(stats.treesPlanted * 48)} people annually
-              </Text>
-            </View>
-          </View>
-          
-          <View style={styles.divider} />
-          
-          <View style={styles.impactItem}>
-            <View style={styles.impactIconContainer}>
-              <Text style={styles.impactIcon}>☁️</Text>
-            </View>
-            <View style={styles.impactContent}>
-              <Text style={styles.impactTitle}>
-                {stats.co2Reduced < 1000 
-                  ? `${formatNumber(stats.co2Reduced)} kg` 
-                  : `${(stats.co2Reduced / 1000).toFixed(2)} tonnes`} CO₂ Offset
-              </Text>
-              <Text style={styles.impactDescription}>
-                Equivalent to {formatNumber(stats.co2Reduced / 4200)} cars off the road for a year
-              </Text>
-            </View>
-          </View>
-          
-          <View style={styles.divider} />
-          
-          <View style={styles.impactItem}>
-            <View style={styles.impactIconContainer}>
-              <Text style={styles.impactIcon}>💧</Text>
-            </View>
-            <View style={styles.impactContent}>
-              <Text style={styles.impactTitle}>Water Savings</Text>
-              <Text style={styles.impactDescription}>
-                Your eco actions saved approximately {formatNumber(stats.totalEcoPoints * 0.25)} liters of water
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
-
-      {/* Player Activity */}
-      <View style={styles.sectionContainer}>
-        <View style={styles.sectionTitleContainer}>
-          <Text style={styles.sectionTitleIcon}>📊</Text>
-          <Text style={styles.sectionTitle}>Player Activity</Text>
-        </View>
-        
-        <View style={styles.statsCard}>
-          <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>👆 Clicks Per Day (avg):</Text>
-            <Text style={styles.statsValue}>
-              {stats.totalClicks > 0 ? Math.round(stats.totalClicks / (gameState.lastSaved ? 
-                Math.max(1, (new Date() - new Date(gameState.lastSaved)) / (1000 * 60 * 60 * 24)) : 1)).toLocaleString() : 0}
-            </Text>
-          </View>
-          
-          <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>💰 Eco Points Per Click:</Text>
-            <Text style={styles.statsValue}>
-              {stats.totalClicks > 0 ? (stats.totalEcoPoints / stats.totalClicks).toFixed(2) : 0}
-            </Text>
-          </View>
-          
-          <View style={styles.statsRow}>
-            <Text style={styles.statsLabel}>⏱️ Time Since First Click:</Text>
-            <Text style={styles.statsValue}>
-              {gameState.lastSaved ? 
-                Math.round((new Date() - new Date(gameState.lastSaved)) / (1000 * 60 * 60 * 24)) : 0} days
-            </Text>
-          </View>
-        </View>
-      </View>
-
       {/* Achievements Section */}
       <View style={styles.sectionContainer}>
         <View style={styles.sectionTitleContainer}>
@@ -196,27 +109,29 @@ const Stats = ({ gameState }) => {
           </Text>
         </View>
         
-        <View style={styles.achievementsContainer}>
-          {unlockedAchievementObjects.map(achievement => (
-            <View key={achievement.id} style={styles.achievementItem}>
-              <Text style={styles.achievementIcon}>{achievement.icon || '🏆'}</Text>
-              <View style={styles.achievementInfo}>
-                <Text style={styles.achievementName}>{achievement.name}</Text>
-                <Text style={styles.achievementDescription}>{achievement.description}</Text>
+        <ScrollView style={styles.achievementsScrollView}>
+          <View style={styles.achievementsContainer}>
+            {unlockedAchievementObjects.map(achievement => (
+              <View key={achievement.id} style={styles.achievementItem}>
+                <Text style={styles.achievementIcon}>{achievement.icon || '🏆'}</Text>
+                <View style={styles.achievementInfo}>
+                  <Text style={styles.achievementName}>{achievement.name}</Text>
+                  <Text style={styles.achievementDescription}>{achievement.description}</Text>
+                </View>
               </View>
-            </View>
-          ))}
-          
-          {lockedAchievementObjects.map(achievement => (
-            <View key={achievement.id} style={[styles.achievementItem, styles.lockedAchievement]}>
-              <Text style={styles.achievementIcon}>🔒</Text>
-              <View style={styles.achievementInfo}>
-                <Text style={styles.lockedAchievementName}>???</Text>
-                <Text style={styles.lockedAchievementDescription}>Keep playing to unlock!</Text>
+            ))}
+            
+            {lockedAchievementObjects.map(achievement => (
+              <View key={achievement.id} style={[styles.achievementItem, styles.lockedAchievement]}>
+                <Text style={styles.achievementIcon}>🔒</Text>
+                <View style={styles.achievementInfo}>
+                  <Text style={styles.lockedAchievementName}>???</Text>
+                  <Text style={styles.lockedAchievementDescription}>Keep playing to unlock!</Text>
+                </View>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        </ScrollView>
       </View>
     </ScrollView>
   );
@@ -343,44 +258,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   
-  // Environmental Impact
-  impactItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  impactIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#81C784',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  impactIcon: {
-    fontSize: 20,
-  },
-  impactContent: {
-    flex: 1,
-  },
-  impactTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 3,
-  },
-  impactDescription: {
-    fontSize: 12,
-    color: '#558B2F',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#C8E6C9',
-    marginVertical: 10,
-  },
-  
   // Achievements
+  achievementsScrollView: {
+    maxHeight: 300,
+    borderRadius: 12,
+  },
   achievementsContainer: {
     marginTop: 5,
   },
